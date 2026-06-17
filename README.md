@@ -1,26 +1,162 @@
-g# DECODE-LAB
 
-# Bharat Safar — Explore India (FRONTED)
+# DECODE-LAB
 
-A simple static front-end project showcasing Indian travel destinations. Built with plain HTML, CSS and vanilla JavaScript.
+This repository contains projects completed as part of the DecodeLabs Internship Program.
 
-## Preview
-- Open `index.html` in a browser to view the site locally.
+---
+
+# Project 1: Bharat Safar — Explore India (Frontend)
+
+A travel destination website built using HTML, CSS, and JavaScript that showcases popular tourist destinations across India.
+
+## Features
+
+* Responsive user interface
+* Destination cards with images and descriptions
+* Search and filtering functionality
+* Modern travel-themed design
+* Pure frontend implementation
+
+## Tech Stack
+
+* HTML5
+* CSS3
+* JavaScript
 
 ## Project Structure
 
-- `index.html` — Main page
-- `style.css` — Styles
-- `script.js` — JavaScript interactions
-- `images/` — Destination images used on the site
+```text
+FRONTED/
+├── images/
+├── index.html
+├── style.css
+└── script.js
+```
 
-## Run locally
+---
 
-Option 1 — Open directly (quick):
+# Project 2: BharatSafar Travel API
 
-1. Open the `FRONTED` folder in your file manager.
-2. Double-click `index.html` to open it in your default browser.
+A RESTful Travel Explorer and Booking Platform built using Node.js and Express.js.
 
-Option 2 — Serve over a simple HTTP server (recommended for local JS features):
+The API allows users to explore destinations, view destination details, create bookings, and submit contact requests.
 
-From a terminal inside the `FRONTED` folder run:
+## Features
+
+* Get all travel destinations
+* Search destinations
+* View destination details
+* Create travel bookings
+* Retrieve booking records
+* Contact endpoint support
+* JSON-based API responses
+* Error handling middleware
+
+## Tech Stack
+
+* Node.js
+* Express.js
+* JavaScript
+* REST API
+
+## API Endpoints
+
+### Destinations
+
+| Method | Endpoint                       |
+| ------ | ------------------------------ |
+| GET    | /api/destinations              |
+| GET    | /api/destinations?search=query |
+| GET    | /api/destinations/:id          |
+
+### Bookings
+
+| Method | Endpoint      |
+| ------ | ------------- |
+| GET    | /api/bookings |
+| POST   | /api/bookings |
+
+### Contact
+
+| Method | Endpoint     |
+| ------ | ------------ |
+| POST   | /api/contact |
+
+## Sample Response
+
+```json
+{
+  "success": true,
+  "message": "Destinations retrieved successfully"
+}
+```
+
+## Project Structure
+
+```text
+travel-api/
+├── controllers/
+├── middleware/
+├── routes/
+├── package.json
+├── package-lock.json
+└── server.js
+```
+
+## Installation & Setup
+
+1. Navigate to the API directory
+
+```bash
+cd travel-api
+```
+
+2. Install dependencies
+
+```bash
+npm install
+```
+
+3. Start the server
+
+```bash
+npm start
+```
+
+4. Open in browser
+
+```text
+http://localhost:5000
+```
+
+---
+
+# Repository Structure
+
+```text
+DECODE-LAB/
+│
+├── FRONTED/
+│   ├── images/
+│   ├── index.html
+│   ├── style.css
+│   └── script.js
+│
+├── travel-api/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── routes/
+│   ├── package.json
+│   ├── package-lock.json
+│   └── server.js
+│
+└── README.md
+```
+
+---
+
+## Author
+
+Sushant Kumar
+
+DecodeLabs Internship Projects
