@@ -1,26 +1,32 @@
-gg# DECODE-LAB
+g# DECODE-LAB
 
 # Bharat Safar — Explore India (FRONTED)
 
 A simple static front-end project showcasing Indian travel destinations. Built with plain HTML, CSS and vanilla JavaScript.
 
-## Preview
-- Open `index.html` in a browser to view the site locally.
+## Features
+
+* Responsive user interface
+* Destination cards with images and descriptions
+* Search and filtering functionality
+* Modern travel-themed design
+* Pure frontend implementation
+
+## Tech Stack
+
+* HTML5
+* CSS3
+* JavaScript
 
 ## Project Structure
 
-- `index.html` — Main page
-- `style.css` — Styles
-- `script.js` — JavaScript interactions
-- `images/` — Destination images used on the site
+```text
+FRONTED/
+├── images/
+├── index.html
+├── style.css
+└── script.js
+```
 
-## Run locally
+---
 
-Option 1 — Open directly (quick):
-
-1. Open the `FRONTED` folder in your file manager.
-2. Double-click `index.html` to open it in your default browser.
-
-Option 2 — Serve over a simple HTTP server (recommended for local JS features):
-
-From a terminal inside the `FRONTED` folder run:
