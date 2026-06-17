@@ -53,11 +53,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     animateElements.forEach(el => scrollObserver.observe(el));
 
-    // --- 4. Form Validation ---
+    // --- 4. Form Validation & API Integration ---
     const contactForm = document.getElementById('contact-form');
     const nameInput = document.getElementById('name');
     const emailInput = document.getElementById('email');
     const destInput = document.getElementById('destination');
+    const dateInput = document.getElementById('travel-date');
     const msgInput = document.getElementById('message');
     const formSuccess = document.getElementById('form-success');
 
@@ -67,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const validateInput = (input, validator, errorId) => {
+        if (!input) return true;
         const formGroup = input.parentElement;
         if (!validator) {
             formGroup.classList.add('error');
@@ -77,30 +79,133 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Toggle Travel Date visibility and requirement based on destination selection
+    if (destInput && dateInput) {
+        const dateGroup = document.getElementById('date-group');
+        const handleDestChange = () => {
+            const isSpecificDest = destInput.value !== '' && destInput.value !== 'other';
+            if (isSpecificDest) {
+                dateGroup.style.display = 'block';
+            } else {
+                dateGroup.style.display = 'none';
+                dateGroup.classList.remove('error');
+                dateInput.value = '';
+            }
+        };
+        destInput.addEventListener('change', handleDestChange);
+        // Initial state check
+        handleDestChange();
+    }
+
     if(contactForm) {
         contactForm.addEventListener('submit', (e) => {
             e.preventDefault();
             
+            const isDestSelected = destInput.value !== '';
+            const isOtherSelected = destInput.value === 'other';
+            const needsDate = isDestSelected && !isOtherSelected;
+
             const isNameValid = validateInput(nameInput, nameInput.value.trim() !== '', 'name-error');
             const isEmailValid = validateInput(emailInput, isValidEmail(emailInput.value.trim()), 'email-error');
-            const isDestValid = validateInput(destInput, destInput.value !== '', 'dest-error');
+            const isDestValid = validateInput(destInput, isDestSelected, 'dest-error');
+            const isDateValid = needsDate 
+                ? validateInput(dateInput, dateInput.value !== '', 'date-error')
+                : validateInput(dateInput, true, 'date-error');
             const isMsgValid = validateInput(msgInput, msgInput.value.trim() !== '', 'msg-error');
 
-            if (isNameValid && isEmailValid && isDestValid && isMsgValid) {
-                // Form is valid - in a real app, send data to server here
-                formSuccess.style.display = 'block';
-                contactForm.reset();
+            if (isNameValid && isEmailValid && isDestValid && isDateValid && isMsgValid) {
+                const submitBtn = contactForm.querySelector('button[type="submit"]');
+                const originalBtnText = submitBtn.innerHTML;
                 
-                // Hide success message after 5 seconds
-                setTimeout(() => {
-                    formSuccess.style.display = 'none';
-                }, 5000);
+                // Disable button and show loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = 'Processing... <i class="fa-solid fa-spinner fa-spin"></i>';
+
+                let url, body;
+                if (needsDate) {
+                    url = 'http://localhost:5000/api/bookings';
+                    body = {
+                        fullName: nameInput.value.trim(),
+                        email: emailInput.value.trim(),
+                        destination: destInput.value,
+                        travelDate: dateInput.value
+                    };
+                } else {
+                    url = 'http://localhost:5000/api/contact';
+                    body = {
+                        name: nameInput.value.trim(),
+                        email: emailInput.value.trim(),
+                        message: msgInput.value.trim()
+                    };
+                }
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    formSuccess.style.display = 'block';
+                    if (data.success) {
+                        formSuccess.textContent = needsDate 
+                            ? 'Trip booked successfully! We will contact you soon.' 
+                            : 'Thank you! Your message has been sent.';
+                        formSuccess.style.color = '#10b981'; // Green success color
+                        formSuccess.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
+                        formSuccess.style.border = '1px solid #10b981';
+                        contactForm.reset();
+                        if (dateInput) document.getElementById('date-group').style.display = 'none';
+                    } else {
+                        formSuccess.textContent = data.message || 'Validation failed. Please verify inputs.';
+                        formSuccess.style.color = '#ef4444'; // Red error color
+                        formSuccess.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                        formSuccess.style.border = '1px solid #ef4444';
+                    }
+                    setTimeout(() => {
+                        formSuccess.style.display = 'none';
+                    }, 5000);
+                })
+                .catch(err => {
+                    console.error('API Error:', err);
+                    // Fallback to demo mode if backend is offline
+                    formSuccess.style.display = 'block';
+                    formSuccess.textContent = 'Offline Demo: Message received successfully!';
+                    formSuccess.style.color = '#3b82f6'; // Blue offline color
+                    formSuccess.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+                    formSuccess.style.border = '1px solid #3b82f6';
+                    contactForm.reset();
+                    if (dateInput) document.getElementById('date-group').style.display = 'none';
+                    setTimeout(() => {
+                        formSuccess.style.display = 'none';
+                    }, 5000);
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                });
             }
         });
     }
 
-    // --- 5. 36 Famous Indian Destinations Data ---
-    const destinations = [
+    // Dynamic dropdown options helper
+    const populateDestinationDropdown = (list) => {
+        if (!destInput) return;
+        destInput.innerHTML = '<option value="" disabled selected>Select a destination</option>';
+        list.forEach(dest => {
+            const opt = document.createElement('option');
+            opt.value = dest.name;
+            opt.textContent = dest.name;
+            destInput.appendChild(opt);
+        });
+        const otherOpt = document.createElement('option');
+        otherOpt.value = 'other';
+        otherOpt.textContent = 'Other / General Query';
+        destInput.appendChild(otherOpt);
+    };
+
+    // --- 5. Famous Indian Destinations Data (Seeded initially, updated from API) ---
+    let destinations = [
         { name: "Taj Mahal, Agra", price: "₹5,000", rating: "4.9", desc: "A symbol of love and a UNESCO World Heritage Site.", id: "agra", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Taj_Mahal_%28Edited%29.jpeg/500px-Taj_Mahal_%28Edited%29.jpeg" },
         { name: "Jaipur, Rajasthan", price: "₹7,500", rating: "4.7", desc: "The Pink City known for its stunning forts and Hawa Mahal palace.", id: "jaipur", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/East_facade_Hawa_Mahal_Jaipur_from_ground_level_%28July_2022%29_-_img_01.jpg/500px-East_facade_Hawa_Mahal_Jaipur_from_ground_level_%28July_2022%29_-_img_01.jpg" },
         { name: "Varanasi, UP", price: "₹4,000", rating: "4.8", desc: "The spiritual capital of India on the banks of river Ganga.", id: "varanasi", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Varanasi%2C_India%2C_Ghats%2C_Cremation_ceremony_in_progress.jpg/500px-Varanasi%2C_India%2C_Ghats%2C_Cremation_ceremony_in_progress.jpg" },
@@ -200,8 +305,56 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Initial render
-    renderDestinations(destinations);
+    // Populate the dropdown initially with local data
+    populateDestinationDropdown(destinations);
+
+    // Initial render with dynamic backend fetch
+    fetch('http://localhost:5000/api/destinations')
+        .then(res => res.json())
+        .then(data => {
+            if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+                console.log('Successfully fetched destinations from backend API');
+                destinations = data.data; // Update local memory array
+                populateDestinationDropdown(destinations); // Repopulate with clean API names
+            }
+        })
+        .catch(err => {
+            console.warn('Backend API offline or failed, falling back to local static destinations:', err);
+        })
+        .finally(() => {
+            // Render the destinations (from API or static fallback)
+            renderDestinations(destinations);
+        });
+
+    // Handle "Book" button clicks to pre-fill the selected destination
+    if (destGrid) {
+        destGrid.addEventListener('click', (e) => {
+            const bookBtn = e.target.closest('.btn');
+            if (bookBtn && bookBtn.textContent.trim().toLowerCase() === 'book') {
+                const card = bookBtn.closest('.destination-card');
+                if (card) {
+                    const destTitle = card.querySelector('.card-title').textContent.trim();
+                    if (destInput) {
+                        // Find matching option in the dropdown and select it
+                        let matchFound = false;
+                        for (let i = 0; i < destInput.options.length; i++) {
+                            if (destInput.options[i].value === destTitle) {
+                                destInput.selectedIndex = i;
+                                matchFound = true;
+                                break;
+                            }
+                        }
+                        if (!matchFound) {
+                            // If no exact match (unlikely), set to Other
+                            destInput.value = 'other';
+                        }
+                        // Trigger change event to update the date input visibility
+                        destInput.dispatchEvent(new Event('change'));
+                    }
+                }
+            }
+        });
+    }
 
     // Load More functionality
     loadMoreBtn.addEventListener('click', () => {
