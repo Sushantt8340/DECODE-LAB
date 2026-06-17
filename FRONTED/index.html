@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bharat Safar | Explore India</title>
+    <meta name="description" content="Explore the world with confidence. Book your next Indian adventure with Bharat Safar.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Header & Navigation -->
+    <header class="header" id="header">
+        <div class="container nav-container">
+            <a href="#" class="logo">
+                <i class="fa-solid fa-map-location-dot"></i> Bharat<span>Safar</span>
+            </a>
+            
+            <nav class="nav-menu" id="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
+                    <li class="nav-item"><a href="#destinations" class="nav-link">Destinations</a></li>
+                    <li class="nav-item"><a href="#packages" class="nav-link">Packages</a></li>
+                    <li class="nav-item"><a href="#why-us" class="nav-link">Why Us</a></li>
+                    <li class="nav-item"><a href="#testimonials" class="nav-link">Testimonials</a></li>
+                    <li class="nav-item"><a href="#contact" class="nav-link btn-primary-outline">Contact Us</a></li>
+                </ul>
+            </nav>
+
+            <div class="hamburger" id="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-overlay"></div>
+        <div class="container hero-container animate-on-scroll">
+            <h1 class="hero-title">Explore India With Confidence</h1>
+            <p class="hero-subtitle">Discover 35+ majestic destinations, from the Himalayas to the backwaters of Kerala. Your unforgettable journey begins here.</p>
+            
+            <div class="search-box">
+                <form id="search-form" class="search-form">
+                    <div class="input-group">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <input type="text" id="search-input" placeholder="Where do you want to go?" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Destinations Section -->
+    <section class="destinations section" id="destinations">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <h2 class="section-title">Popular Destinations in India</h2>
+                <p class="section-subtitle">Handpicked selection of the most beautiful and culturally rich places across the country.</p>
+            </div>
+
+            <!-- Destination Filter Output Message -->
+            <div id="search-result-message" class="search-result-message"></div>
+
+            <div class="grid destinations-grid" id="destinations-grid">
+                <!-- Javascript will inject 36 destination cards here -->
+            </div>
+            
+            <div class="load-more-container animate-on-scroll">
+                <button id="load-more-btn" class="btn btn-secondary">Load More Destinations <i class="fa-solid fa-arrow-down"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Travel Packages Section -->
+    <section class="packages section bg-light" id="packages">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <h2 class="section-title">Exclusive Travel Packages</h2>
+                <p class="section-subtitle">Choose the perfect tier that fits your budget and travel style.</p>
+            </div>
+
+            <div class="grid packages-grid">
+                <!-- Basic Package -->
+                <div class="package-card animate-on-scroll">
+                    <div class="package-header">
+                        <h3>Backpacker</h3>
+                        <div class="package-price">₹15,000<span>/person</span></div>
+                    </div>
+                    <div class="package-body">
+                        <ul class="package-features">
+                            <li><i class="fa-solid fa-check"></i> 5 Days / 4 Nights</li>
+                            <li><i class="fa-solid fa-check"></i> Standard Accommodation</li>
+                            <li><i class="fa-solid fa-check"></i> Breakfast Included</li>
+                            <li><i class="fa-solid fa-check"></i> Group City Tours</li>
+                            <li class="disabled"><i class="fa-solid fa-xmark"></i> Dedicated Guide</li>
+                            <li class="disabled"><i class="fa-solid fa-xmark"></i> Airport Transfers</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-secondary btn-block">Book Basic</a>
+                    </div>
+                </div>
+
+                <!-- Premium Package -->
+                <div class="package-card popular animate-on-scroll" style="transition-delay: 0.1s;">
+                    <div class="popular-badge">Most Popular</div>
+                    <div class="package-header">
+                        <h3>Premium Explorer</h3>
+                        <div class="package-price">₹35,000<span>/person</span></div>
+                    </div>
+                    <div class="package-body">
+                        <ul class="package-features">
+                            <li><i class="fa-solid fa-check"></i> 7 Days / 6 Nights</li>
+                            <li><i class="fa-solid fa-check"></i> 4-Star Accommodation</li>
+                            <li><i class="fa-solid fa-check"></i> Breakfast & Dinner</li>
+                            <li><i class="fa-solid fa-check"></i> Private City Tours</li>
+                            <li><i class="fa-solid fa-check"></i> Dedicated Guide</li>
+                            <li class="disabled"><i class="fa-solid fa-xmark"></i> Spa & Wellness</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary btn-block">Book Premium</a>
+                    </div>
+                </div>
+
+                <!-- Luxury Package -->
+                <div class="package-card animate-on-scroll" style="transition-delay: 0.2s;">
+                    <div class="package-header">
+                        <h3>Royal Luxury</h3>
+                        <div class="package-price">₹75,000<span>/person</span></div>
+                    </div>
+                    <div class="package-body">
+                        <ul class="package-features">
+                            <li><i class="fa-solid fa-check"></i> 10 Days / 9 Nights</li>
+                            <li><i class="fa-solid fa-check"></i> 5-Star Heritage Hotels</li>
+                            <li><i class="fa-solid fa-check"></i> All Meals Included</li>
+                            <li><i class="fa-solid fa-check"></i> VIP Private Tours</li>
+                            <li><i class="fa-solid fa-check"></i> Dedicated Guide & Driver</li>
+                            <li><i class="fa-solid fa-check"></i> Spa & Wellness Passes</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-secondary btn-block">Book Luxury</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us Section -->
+    <section class="why-us section" id="why-us">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <h2 class="section-title">Why Choose Us?</h2>
+                <p class="section-subtitle">We bring you the best experiences with guaranteed satisfaction.</p>
+            </div>
+
+            <div class="grid features-grid">
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h3>Secure Booking</h3>
+                    <p>Our platform uses bank-level encryption to ensure your payments and personal data are always protected.</p>
+                </div>
+                <div class="feature-card animate-on-scroll" style="transition-delay: 0.1s;">
+                    <div class="feature-icon"><i class="fa-solid fa-tags"></i></div>
+                    <h3>Best Price Guarantee</h3>
+                    <p>We negotiate with thousands of hotels and operators to bring you the lowest rates available.</p>
+                </div>
+                <div class="feature-card animate-on-scroll" style="transition-delay: 0.2s;">
+                    <div class="feature-icon"><i class="fa-solid fa-headset"></i></div>
+                    <h3>24/7 Support</h3>
+                    <p>Our travel experts are available round the clock to assist you with any queries or emergencies during your trip.</p>
+                </div>
+                <div class="feature-card animate-on-scroll" style="transition-delay: 0.3s;">
+                    <div class="feature-icon"><i class="fa-solid fa-user-tie"></i></div>
+                    <h3>Expert Guides</h3>
+                    <p>Explore with verified, multilingual local guides who bring the destination's history and culture to life.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials section bg-light" id="testimonials">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <h2 class="section-title">What Our Travelers Say</h2>
+                <p class="section-subtitle">Read the stories of adventurers who explored India with us.</p>
+            </div>
+
+            <div class="grid testimonials-grid">
+                <div class="testimonial-card animate-on-scroll">
+                    <div class="quote-icon"><i class="fa-solid fa-quote-left"></i></div>
+                    <p class="testimonial-text">"Booking our honeymoon to Kerala backwaters through BharatSafar was the best decision. Everything from houseboat to food was immaculately organized!"</p>
+                    <div class="testimonial-author">
+                        <img src="https://i.pravatar.cc/150?img=47" alt="Aarav Sharma" class="author-img">
+                        <div class="author-info">
+                            <h4>Aarav Sharma</h4>
+                            <span>Travelled to Kerala</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card animate-on-scroll" style="transition-delay: 0.1s;">
+                    <div class="quote-icon"><i class="fa-solid fa-quote-left"></i></div>
+                    <p class="testimonial-text">"The solo trip to Spiti Valley was daunting, but the 24/7 support and expert guides made me feel completely safe and allowed me to enjoy the surreal landscapes."</p>
+                    <div class="testimonial-author">
+                        <img src="https://i.pravatar.cc/150?img=32" alt="Priya Patel" class="author-img">
+                        <div class="author-info">
+                            <h4>Priya Patel</h4>
+                            <span>Travelled to Spiti</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card animate-on-scroll" style="transition-delay: 0.2s;">
+                    <div class="quote-icon"><i class="fa-solid fa-quote-left"></i></div>
+                    <p class="testimonial-text">"The Royal Luxury package in Rajasthan made us feel like literal royalty. Staying at the Taj Lake Palace was a dream come true for our family."</p>
+                    <div class="testimonial-author">
+                        <img src="https://i.pravatar.cc/150?img=11" alt="Rohan & Neha" class="author-img">
+                        <div class="author-info">
+                            <h4>Rohan & Neha</h4>
+                            <span>Travelled to Udaipur</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Form Section -->
+    <section class="contact section" id="contact">
+        <div class="container animate-on-scroll">
+            <div class="contact-wrapper">
+                <div class="contact-info">
+                    <h2>Ready to start your adventure?</h2>
+                    <p>Drop us a message and our travel experts will get back to you with a customized itinerary within 24 hours.</p>
+                    
+                    <ul class="contact-details">
+                        <li><i class="fa-solid fa-location-dot"></i> 123 Travel Avenue, Connaught Place, New Delhi, India</li>
+                        <li><i class="fa-solid fa-phone"></i> +91 8340538106</li>
+                        <li><i class="fa-solid fa-envelope"></i> sushant8809045@gmail.com</li>
+                    </ul>
+                    
+                    <div class="social-links">
+                        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <div class="contact-form-container">
+                    <form id="contact-form" class="form">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" name="name" placeholder="John Doe">
+                            <span class="error-msg" id="name-error">Please enter your name.</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" placeholder="john@example.com">
+                            <span class="error-msg" id="email-error">Please enter a valid email.</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="destination">Interested Destination</label>
+                            <select id="destination" name="destination">
+                                <option value="" disabled selected>Select a destination</option>
+                                <option value="rajasthan">Rajasthan</option>
+                                <option value="kerala">Kerala</option>
+                                <option value="himalayas">Himalayas</option>
+                                <option value="goa">Goa</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <span class="error-msg" id="dest-error">Please select a destination.</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">Your Message</label>
+                            <textarea id="message" name="message" rows="4" placeholder="Tell us about your dream trip..."></textarea>
+                            <span class="error-msg" id="msg-error">Please enter your message.</span>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-block">Send Message <i class="fa-solid fa-paper-plane"></i></button>
+                        <div id="form-success" class="form-success">Thank you! Your message has been sent.</div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col brand-col">
+                    <a href="#" class="logo footer-logo">
+                        <i class="fa-solid fa-map-location-dot"></i> Bharat<span>Safar</span>
+                    </a>
+                    <p>Your trusted partner in exploring the magnificent landscapes, rich culture, and historic heritage of Incredible India.</p>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#destinations">Destinations</a></li>
+                        <li><a href="#packages">Tour Packages</a></li>
+                        <li><a href="#why-us">About Us</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="#">Terms & Conditions</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Cancellation Policy</a></li>
+                        <li><a href="#">FAQs</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe for exclusive offers and travel inspiration.</p>
+                    <form class="newsletter-form">
+                        <input type="email" placeholder="Your email address" required>
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-arrow-right"></i></button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 BharatSafar. All rights reserved.</p>
+                <p>Designed for the ultimate traveler.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Vanilla Javascript -->
+    <script src="script.js"></script>
+</body>
+</html>
