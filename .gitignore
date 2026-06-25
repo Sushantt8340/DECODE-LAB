@@ -1,0 +1,28 @@
+# Dependencies - node_modules kabhi push mat karo
+node_modules/
+
+# Environment variables - secrets GitHub pe nahi jaane chahiye
+.env
+.env.local
+.env.production
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary/scratch files (recovery files)
+PROJECT01/FRONTED/*.txt
+PROJECT01/FRONTED/*.json
+PROJECT01/FRONTED/found_*.html
+PROJECT01/FRONTED/index.html_*
+
+# VS Code
+.vscode/
+
+# Build output
+dist/
+build/
