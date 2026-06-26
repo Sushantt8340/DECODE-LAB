@@ -6,7 +6,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     
     // --- API Configuration ---
-    const API_BASE = 'http://localhost:5000/api';
+    const API_BASE = 'https://bharat-safar.onrender.com/api';
 
     // --- Global Custom Toast Notification Function ---
     const showToast = (message, type = 'success') => {
