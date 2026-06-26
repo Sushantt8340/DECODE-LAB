@@ -74,8 +74,8 @@
 
 ```text
 DECODE-LAB/
-├── PROJECT01/
-│   ├── FRONTED/                  # Static Frontend Files
+|
+│---├── FRONTED/                  # Static Frontend Files
 │   │   ├── images/               # Image assets
 │   │   ├── index.html            # Core Single Page HTML structure
 │   │   ├── style.css             # Vanilla CSS design tokens & animations
@@ -181,19 +181,4 @@ DECODE-LAB/
 
 ---
 
-## 🌐 Deployment Instructions
 
-### **Database (MongoDB Atlas)**
-Create a database on MongoDB Atlas, add user permissions, and copy the Connection String. Paste this connection URI in your backend service `.env` file under the key `MONGO_URI`.
-
-### **Backend (Render.com)**
-1. Connect GitHub and choose the `DECODE-LAB` repository.
-2. Select **Root Directory** as `PROJECT01/travel-explorer`.
-3. Set **Build Command** to `npm install` and **Start Command** to `node server.js`.
-4. Add all `.env` environment variables in Render settings.
-5. Copy the live API URL provided by Render.
-
-### **Frontend (Netlify / Vercel)**
-1. In `PROJECT01/FRONTED/script.js`, change `API_BASE` to `https://your-render-app-url.onrender.com/api`.
-2. Commit and push the changes to GitHub.
-3. Deploy the `PROJECT01/FRONTED/` folder on Netlify or Vercel as a static site.
