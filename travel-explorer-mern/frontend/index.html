@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bharat Safar | Explore India</title>
+    <meta name="description" content="Explore the world with confidence. Book your next Indian adventure with Bharat Safar.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Header & Navigation -->
+    <header class="header" id="header">
+        <div class="container nav-container">
+            <a href="#" class="logo">
+                <i class="fa-solid fa-map-location-dot"></i> Bharat<span>Safar</span>
+            </a>
+            
+                        <nav class="nav-menu" id="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
+                    <li class="nav-item"><a href="#destinations" class="nav-link">Destinations</a></li>
+                    <li class="nav-item"><a href="#packages" class="nav-link">Packages</a></li>
+                    <li class="nav-item"><a href="#why-us" class="nav-link">Why Us</a></li>
+                    <li class="nav-item"><a href="#testimonials" class="nav-link">Testimonials</a></li>
+                    <li class="nav-item"><a href="#contact" class="nav-link btn-primary-outline">Contact Us</a></li>
+                    <li class="nav-item">
+                        <button id="theme-toggle" aria-label="Toggle Dark Mode" title="Toggle Theme">
+                            <i class="fa-solid fa-moon"></i>
+                        </button>
+                    </li>
+                    <li class="nav-item" id="nav-login-btn"><a href="#" class="nav-link" style="color: var(--primary-color); font-weight: 600;"><i class="fa-solid fa-user"></i> Login</a></li>
+                    <li class="nav-item" id="nav-user-dropdown" style="display: none; position: relative;">
+                        <a href="#" class="nav-link" id="nav-username" style="font-weight: 600; color: var(--primary-color); display: flex; align-items: center; gap: 6px;">
+                            <i class="fa-solid fa-circle-user"></i> <span id="nav-username-text">Dashboard</span>
+                            <span id="navbar-unread-badge" style="display: none; width: 8px; height: 8px; background: #ef4444; border-radius: 50%;"></span>
+                        </a>
+                        <ul class="dropdown-menu" style="position: absolute; right: 0; background: var(--card-bg); border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.15); border-radius: 8px; list-style: none; padding: 10px; display: none; min-width: 170px; z-index: 1000;">
+                            <li><a href="#" id="menu-my-bookings" style="display: block; padding: 8px 12px; color: var(--text-color); font-weight: 500;">My Bookings</a></li>
+                            <li><a href="#" id="menu-notifications" style="display: block; padding: 8px 12px; color: var(--text-color); font-weight: 500; display: flex; justify-content: space-between; align-items: center; gap: 10px;">Notifications <span id="nav-unread-count" style="display: none; background: #ef4444; color: #fff; border-radius: 10px; padding: 2px 6px; font-size: 0.7rem; font-weight: 700; line-height: 1;">0</span></a></li>
+                            <li><a href="#" id="menu-wishlist" style="display: block; padding: 8px 12px; color: var(--text-color); font-weight: 500; display: flex; justify-content: space-between; align-items: center; gap: 10px;">My Wishlist <span id="nav-wishlist-count" style="display: none; background: #ef4444; color: #fff; border-radius: 10px; padding: 2px 6px; font-size: 0.7rem; font-weight: 700; line-height: 1;">0</span></a></li>
+                            <li id="menu-admin-link" style="display: none;"><a href="#" id="menu-admin-dashboard" style="display: block; padding: 8px 12px; color: var(--text-color); font-weight: 600;">Admin Desk</a></li>
+                            <li><a href="#" id="menu-logout" style="display: block; padding: 8px 12px; color: #ef4444; border-top: 1px solid var(--border-color); font-weight: 500;">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="hamburger" id="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-overlay"></div>
+        <div class="container hero-container animate-on-scroll">
+            <h1 class="hero-title">Explore India With Confidence</h1>
+            <p class="hero-subtitle">Discover 35+ majestic destinations, from the Himalayas to the backwaters of Kerala. Your unforgettable journey begins here.</p>
+            
+            <div class="search-box">
+                <form id="search-form" class="search-form">
+                    <div class="input-group">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <input type="text" id="search-input" placeholder="Where do you want to go?" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Destinations Section -->
+    <section class="destinations section" id="destinations">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <h2 class="section-title">Popular Destinations in India</h2>
+                <p class="section-subtitle">Handpicked selection of the most beautiful and culturally rich places across the country.</p>
+            </div>
+
+            <!-- Destination Filter Output Message -->
+            <div id="search-result-message" class="search-result-message"></div>
+
+            <div class="grid destinations-grid" id="destinations-grid">
+                <!-- Javascript will inject 36 destination cards here -->
+            </div>
+            
+            <div class="load-more-container animate-on-scroll">
+                <button id="load-more-btn" class="btn btn-secondary">Load More Destinations <i class="fa-solid fa-arrow-down"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Travel Packages Section -->
+    <section class="packages section bg-light" id="packages">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <h2 class="section-title">Exclusive Travel Packages</h2>
+                <p class="section-subtitle">Choose the perfect tier that fits your budget and travel style.</p>
+            </div>
+
+            <div class="grid packages-grid">
+                <!-- Basic Package -->
+                <div class="package-card animate-on-scroll">
+                    <div class="package-header">
+                        <h3>Backpacker</h3>
+                        <div class="package-price">₹15,000<span>/person</span></div>
+                    </div>
+                    <div class="package-body">
+                        <ul class="package-features">
+                            <li><i class="fa-solid fa-check"></i> 5 Days / 4 Nights</li>
+                            <li><i class="fa-solid fa-check"></i> Standard Accommodation</li>
+                            <li><i class="fa-solid fa-check"></i> Breakfast Included</li>
+                            <li><i class="fa-solid fa-check"></i> Group City Tours</li>
+                            <li class="disabled"><i class="fa-solid fa-xmark"></i> Dedicated Guide</li>
+                            <li class="disabled"><i class="fa-solid fa-xmark"></i> Airport Transfers</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-secondary btn-block">Book Basic</a>
+                    </div>
+                </div>
+
+                <!-- Premium Package -->
+                <div class="package-card popular animate-on-scroll" style="transition-delay: 0.1s;">
+                    <div class="popular-badge">Most Popular</div>
+                    <div class="package-header">
+                        <h3>Premium Explorer</h3>
+                        <div class="package-price">₹35,000<span>/person</span></div>
+                    </div>
+                    <div class="package-body">
+                        <ul class="package-features">
+                            <li><i class="fa-solid fa-check"></i> 7 Days / 6 Nights</li>
+                            <li><i class="fa-solid fa-check"></i> 4-Star Accommodation</li>
+                            <li><i class="fa-solid fa-check"></i> Breakfast & Dinner</li>
+                            <li><i class="fa-solid fa-check"></i> Private City Tours</li>
+                            <li><i class="fa-solid fa-check"></i> Dedicated Guide</li>
+                            <li class="disabled"><i class="fa-solid fa-xmark"></i> Spa & Wellness</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary btn-block">Book Premium</a>
+                    </div>
+                </div>
+
+                <!-- Luxury Package -->
+                <div class="package-card animate-on-scroll" style="transition-delay: 0.2s;">
+                    <div class="package-header">
+                        <h3>Royal Luxury</h3>
+                        <div class="package-price">₹75,000<span>/person</span></div>
+                    </div>
+                    <div class="package-body">
+                        <ul class="package-features">
+                            <li><i class="fa-solid fa-check"></i> 10 Days / 9 Nights</li>
+                            <li><i class="fa-solid fa-check"></i> 5-Star Heritage Hotels</li>
+                            <li><i class="fa-solid fa-check"></i> All Meals Included</li>
+                            <li><i class="fa-solid fa-check"></i> VIP Private Tours</li>
+                            <li><i class="fa-solid fa-check"></i> Dedicated Guide & Driver</li>
+                            <li><i class="fa-solid fa-check"></i> Spa & Wellness Passes</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-secondary btn-block">Book Luxury</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us Section -->
+    <section class="why-us section" id="why-us">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <h2 class="section-title">Why Choose Us?</h2>
+                <p class="section-subtitle">We bring you the best experiences with guaranteed satisfaction.</p>
+            </div>
+
+            <div class="grid features-grid">
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h3>Secure Booking</h3>
+                    <p>Our platform uses bank-level encryption to ensure your payments and personal data are always protected.</p>
+                </div>
+                <div class="feature-card animate-on-scroll" style="transition-delay: 0.1s;">
+                    <div class="feature-icon"><i class="fa-solid fa-tags"></i></div>
+                    <h3>Best Price Guarantee</h3>
+                    <p>We negotiate with thousands of hotels and operators to bring you the lowest rates available.</p>
+                </div>
+                <div class="feature-card animate-on-scroll" style="transition-delay: 0.2s;">
+                    <div class="feature-icon"><i class="fa-solid fa-headset"></i></div>
+                    <h3>24/7 Support</h3>
+                    <p>Our travel experts are available round the clock to assist you with any queries or emergencies during your trip.</p>
+                </div>
+                <div class="feature-card animate-on-scroll" style="transition-delay: 0.3s;">
+                    <div class="feature-icon"><i class="fa-solid fa-user-tie"></i></div>
+                    <h3>Expert Guides</h3>
+                    <p>Explore with verified, multilingual local guides who bring the destination's history and culture to life.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials section bg-light" id="testimonials">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <h2 class="section-title">What Our Travelers Say</h2>
+                <p class="section-subtitle">Read the stories of adventurers who explored India with us.</p>
+            </div>
+
+            <div class="grid testimonials-grid">
+                <div class="testimonial-card animate-on-scroll">
+                    <div class="quote-icon"><i class="fa-solid fa-quote-left"></i></div>
+                    <p class="testimonial-text">"Booking our honeymoon to Kerala backwaters through BharatSafar was the best decision. Everything from houseboat to food was immaculately organized!"</p>
+                    <div class="testimonial-author">
+                        <img src="https://i.pravatar.cc/150?img=47" alt="Aarav Sharma" class="author-img">
+                        <div class="author-info">
+                            <h4>Aarav Sharma</h4>
+                            <span>Travelled to Kerala</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card animate-on-scroll" style="transition-delay: 0.1s;">
+                    <div class="quote-icon"><i class="fa-solid fa-quote-left"></i></div>
+                    <p class="testimonial-text">"The solo trip to Spiti Valley was daunting, but the 24/7 support and expert guides made me feel completely safe and allowed me to enjoy the surreal landscapes."</p>
+                    <div class="testimonial-author">
+                        <img src="https://i.pravatar.cc/150?img=32" alt="Priya Patel" class="author-img">
+                        <div class="author-info">
+                            <h4>Priya Patel</h4>
+                            <span>Travelled to Spiti</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card animate-on-scroll" style="transition-delay: 0.2s;">
+                    <div class="quote-icon"><i class="fa-solid fa-quote-left"></i></div>
+                    <p class="testimonial-text">"The Royal Luxury package in Rajasthan made us feel like literal royalty. Staying at the Taj Lake Palace was a dream come true for our family."</p>
+                    <div class="testimonial-author">
+                        <img src="https://i.pravatar.cc/150?img=11" alt="Rohan & Neha" class="author-img">
+                        <div class="author-info">
+                            <h4>Rohan & Neha</h4>
+                            <span>Travelled to Udaipur</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Form Section -->
+    <section class="contact section" id="contact">
+        <div class="container animate-on-scroll">
+            <div class="contact-wrapper">
+                <div class="contact-info">
+                    <h2>Ready to start your adventure?</h2>
+                    <p>Drop us a message and our travel experts will get back to you with a customized itinerary within 24 hours.</p>
+                    
+                    <ul class="contact-details">
+                        <li><i class="fa-solid fa-location-dot"></i> 123 Travel Avenue, Connaught Place, New Delhi, India</li>
+                        <li><i class="fa-solid fa-phone"></i> +91 8340538106</li>
+                        <li><i class="fa-solid fa-envelope"></i> sushant8809045@gmail.com</li>
+                    </ul>
+                    
+                    <div class="social-links">
+                        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <div class="contact-form-container">
+                                        <form id="contact-form" class="form">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" name="name" placeholder="John Doe">
+                            <span class="error-msg" id="name-error">Please enter your name.</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" placeholder="john@example.com">
+                            <span class="error-msg" id="email-error">Please enter a valid email.</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" placeholder="+91 9876543210">
+                            <span class="error-msg" id="phone-error">Please enter a valid phone number (10-15 digits).</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="destination">Interested Destination</label>
+                            <select id="destination" name="destination">
+                                <option value="" disabled selected>Select a destination</option>
+                                <option value="rajasthan">Rajasthan</option>
+                                <option value="kerala">Kerala</option>
+                                <option value="himalayas">Himalayas</option>
+                                <option value="goa">Goa</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <span class="error-msg" id="dest-error">Please select a destination.</span>
+                        </div>
+
+                        <div class="form-group" id="date-group">
+                            <label for="travel-date">Travel Date</label>
+                            <input type="date" id="travel-date" name="travelDate">
+                            <span class="error-msg" id="date-error">Please select a travel date.</span>
+                        </div>
+
+                        <!-- Upgraded Booking Guest Fields -->
+                        <div class="form-row" id="guests-row" style="display: none; gap: 15px; margin-bottom: 15px;">
+                            <div class="form-group" style="flex: 1;">
+                                <label for="adults">Adults (18+)</label>
+                                <input type="number" id="adults" name="adults" min="1" value="1" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--white); color: var(--text-color);">
+                                <span class="error-msg" id="adults-error">Must be at least 1.</span>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="kids">Kids (0-17)</label>
+                                <input type="number" id="kids" name="kids" min="0" value="0" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--white); color: var(--text-color);">
+                                <span class="error-msg" id="kids-error">Must be at least 0.</span>
+                            </div>
+                        </div>
+
+                        <!-- Upgraded Package Selection -->
+                        <div class="form-group" id="package-group" style="display: none; margin-bottom: 15px;">
+                            <label for="package-type">Select Package Tier</label>
+                            <select id="package-type" name="packageType" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--white); color: var(--text-color);">
+                                <option value="basic">Backpacker (₹15,000/person)</option>
+                                <option value="premium" selected>Premium Explorer (₹35,000/person)</option>
+                                <option value="luxury">Royal Luxury (₹75,000/person)</option>
+                            </select>
+                            <span class="error-msg" id="package-error">Please select a package tier.</span>
+                        </div>
+
+                        <!-- Upgraded Price Display -->
+                        <div class="form-group" id="price-display-group" style="display: none; background: var(--light-color); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); text-align: center; margin-bottom: 15px;">
+                            <span style="font-weight: 600; font-size: 1rem; color: var(--text-color);">Estimated Total Price:</span>
+                            <h3 id="total-price-val" style="margin: 5px 0 0 0; color: var(--primary-color); font-size: 1.6rem; font-weight: 800;">₹35,000</h3>
+                        </div>
+
+                        <!-- Upgraded Payment Options -->
+                        <div class="form-group" id="payment-options-group" style="display: none; margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-color);">Payment Option</label>
+                            <div style="display: flex; gap: 20px; align-items: center;">
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-color);">
+                                    <input type="radio" name="paymentOption" value="pay_online" checked style="cursor: pointer;"> Pay Online (Razorpay)
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-color);">
+                                    <input type="radio" name="paymentOption" value="pay_counter" style="cursor: pointer;"> Pay at Counter
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">Your Message / Special Requests</label>
+                            <textarea id="message" name="message" rows="4" placeholder="Tell us about your dream trip..."></textarea>
+                            <span class="error-msg" id="msg-error">Please enter your message.</span>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-block">Send Message <i class="fa-solid fa-paper-plane"></i></button>
+                        <div id="form-success" class="form-success">Thank you! Your message/booking has been sent.</div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col brand-col">
+                    <a href="#" class="logo footer-logo">
+                        <i class="fa-solid fa-map-location-dot"></i> Bharat<span>Safar</span>
+                    </a>
+                    <p>Your trusted partner in exploring the magnificent landscapes, rich culture, and historic heritage of Incredible India.</p>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#destinations">Destinations</a></li>
+                        <li><a href="#packages">Tour Packages</a></li>
+                        <li><a href="#why-us">About Us</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="#">Terms & Conditions</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Cancellation Policy</a></li>
+                        <li><a href="#">FAQs</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe for exclusive offers and travel inspiration.</p>
+                    <form class="newsletter-form">
+                        <input type="email" placeholder="Your email address" required>
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-arrow-right"></i></button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 BharatSafar. All rights reserved.</p>
+                <p>Designed for the ultimate traveler.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Vanilla Javascript -->
+        <!-- Toast Container for Toast Notifications -->\n    <div id="toast-container" style="position: fixed; bottom: 30px; right: 20px; z-index: 9999; display: flex; flex-direction: column-reverse; gap: 10px; max-width: 350px; pointer-events: none;"></div>\n\n    <!-- Modals Section -->\n    <!-- 1. Authentication Modal (Login / Register / Forgot Password) -->
+    <div id="auth-modal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+        <div class="modal-card" style="background: var(--white); border: 1px solid var(--border-color); width: 90%; max-width: 450px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); overflow: hidden; position: relative; animation: slideIn 0.3s ease;">
+            <button onclick="closeAuthModal()" style="position: absolute; right: 15px; top: 15px; background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #888; z-index: 10;">&times;</button>
+            
+            <!-- Auth Tabs (Preserve exact style string for script.js querySelector match) -->
+            <div style="display: flex; border-bottom: 1px solid #eee; background: var(--light-color);">
+                <button id="tab-login" onclick="toggleAuthForm('login')" style="flex: 1; padding: 15px; border: none; background: var(--white); color: var(--text-color); font-weight: 600; font-size: 1.1rem; cursor: pointer; border-bottom: 3px solid var(--primary-color); color: var(--primary-color);">Login</button>
+                <button id="tab-signup" onclick="toggleAuthForm('signup')" style="flex: 1; padding: 15px; border: none; background: none; font-weight: 600; font-size: 1.1rem; cursor: pointer; color: #888;">Sign Up</button>
+            </div>
+            
+            <div style="padding: 25px;">
+                <!-- Error Message Alert -->
+                <div id="auth-error-msg" class="alert alert-danger" style="display: none; color: #ef4444; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 10px; border-radius: 6px; margin-bottom: 15px; font-weight: 500; font-size: 0.9rem; text-align: center;"></div>
+                
+                <!-- Login Form -->
+                <form id="login-form">
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--text-color);">Email Address</label>
+                        <input type="email" id="login-email" required placeholder="john@example.com" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--white); color: var(--text-color);">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 15px; position: relative;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--text-color);">Password</label>
+                        <input type="password" id="login-password" required placeholder="••••••••" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--white); color: var(--text-color); padding-right: 40px;">
+                        <i class="fa-solid fa-eye" id="toggle-login-password" style="position: absolute; right: 12px; top: 38px; cursor: pointer; color: #888; z-index: 5;"></i>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 0.9rem;">
+                        <label style="display: flex; align-items: center; gap: 6px; color: var(--text-color); cursor: pointer;">
+                            <input type="checkbox" id="login-remember" style="cursor: pointer;"> Remember Me
+                        </label>
+                        <a href="#" id="link-forgot-password" style="color: var(--primary-color); font-weight: 600;">Forgot Password?</a>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" style="padding: 12px;">Login <i class="fa-solid fa-right-to-bracket"></i></button>
+                </form>
+                
+                <!-- Signup Form -->
+                <form id="signup-form" style="display: none;">
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--text-color);">Full Name</label>
+                        <input type="text" id="signup-name" required placeholder="John Doe" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--white); color: var(--text-color);">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--text-color);">Email Address</label>
+                        <input type="email" id="signup-email" required placeholder="john@example.com" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--white); color: var(--text-color);">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 20px; position: relative;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--text-color);">Password</label>
+                        <input type="password" id="signup-password" required placeholder="••••••••" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--white); color: var(--text-color); padding-right: 40px;">
+                        <i class="fa-solid fa-eye" id="toggle-signup-password" style="position: absolute; right: 12px; top: 38px; cursor: pointer; color: #888; z-index: 5;"></i>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" style="padding: 12px;">Sign Up <i class="fa-solid fa-user-plus"></i></button>
+                </form>
+                
+                <!-- Forgot Password Form -->
+                <form id="forgot-password-form" style="display: none;">
+                    <h3 style="margin-top: 0; margin-bottom: 10px; font-size: 1.15rem; color: var(--dark-color); text-align: center;">Reset Password</h3>
+                    <p style="margin-bottom: 15px; font-size: 0.85rem; color: #666; text-align: center; line-height: 1.4;">Enter your email address and choose a new password. We will update it directly.</p>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--text-color);">Email Address</label>
+                        <input type="email" id="reset-email" required placeholder="john@example.com" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--white); color: var(--text-color);">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 20px; position: relative;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--text-color);">New Password</label>
+                        <input type="password" id="reset-password" required placeholder="••••••••" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--white); color: var(--text-color); padding-right: 40px;">
+                        <i class="fa-solid fa-eye" id="toggle-reset-password" style="position: absolute; right: 12px; top: 38px; cursor: pointer; color: #888; z-index: 5;"></i>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" style="padding: 12px; margin-bottom: 15px;">Reset Password <i class="fa-solid fa-key"></i></button>
+                    <div style="text-align: center; font-size: 0.9rem;">
+                        <a href="#" id="link-back-to-login" style="color: var(--primary-color); font-weight: 600;"><i class="fa-solid fa-arrow-left"></i> Back to Login</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>\n\n    <!-- 2. Customer Dashboard Modal -->
+    <div id="dashboard-modal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+        <div class="modal-card" style="background: var(--white); border: 1px solid var(--border-color); width: 90%; max-width: 600px; max-height: 80vh; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); overflow: hidden; position: relative; display: flex; flex-direction: column; animation: slideIn 0.3s ease;">
+            <button onclick="closeDashboardModal()" style="position: absolute; right: 15px; top: 15px; background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #888; z-index: 10;">&times;</button>
+            <div style="padding: 20px; border-bottom: 1px solid var(--border-color); background: var(--light-color);">
+                <h3 style="margin: 0; font-size: 1.3rem; color: var(--text-color); display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-circle-user" style="color: var(--primary-color);"></i> Customer Dashboard</h3>
+                <div style="display: flex; gap: 5px; margin-top: 15px;">
+                    <button id="cust-tab-bookings" onclick="switchCustomerTab('bookings')" style="padding: 10px 15px; border: none; background: none; font-weight: 600; font-size: 0.95rem; cursor: pointer; color: var(--primary-color); border-bottom: 3px solid var(--primary-color); display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                        <i class="fa-solid fa-plane-departure"></i> My Bookings
+                    </button>
+                    <button id="cust-tab-notifications" onclick="switchCustomerTab('notifications')" style="padding: 10px 15px; border: none; background: none; font-weight: 600; font-size: 0.95rem; cursor: pointer; color: #888; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                        <i class="fa-solid fa-bell"></i> Notifications 
+                        <span id="cust-notifications-badge" style="display: none; background: #ef4444; color: #fff; border-radius: 10px; padding: 2px 6px; font-size: 0.7rem; font-weight: 700; line-height: 1;">0</span>
+                    </button>
+                    <button id="cust-tab-wishlist" onclick="switchCustomerTab('wishlist')" style="padding: 10px 15px; border: none; background: none; font-weight: 600; font-size: 0.95rem; cursor: pointer; color: #888; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                        <i class="fa-solid fa-heart"></i> My Wishlist <span id="tab-wishlist-count" style="display: none; background: #ef4444; color: #fff; border-radius: 10px; padding: 2px 6px; font-size: 0.7rem; font-weight: 700; line-height: 1; box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);">0</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="user-bookings-container" style="padding: 20px; overflow-y: auto; flex: 1; background: var(--white); color: var(--text-color);">
+                <!-- Dynamically populated bookings list -->
+            </div>
+            
+            <div id="user-notifications-container" style="padding: 20px; overflow-y: auto; flex: 1; display: none; background: var(--white); color: var(--text-color);">
+                <!-- Dynamically populated notifications list -->
+            </div>
+
+            <div id="user-wishlist-container" style="padding: 20px; overflow-y: auto; flex: 1; display: none; background: var(--white); color: var(--text-color);">
+                <!-- Dynamically populated wishlist list -->
+            </div>
+        </div>
+    </div>\n\n    <!-- 3. System Admin Dashboard Modal -->
+    <div id="admin-modal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+        <div class="modal-card" style="background: var(--white); border: 1px solid var(--border-color); width: 95%; max-width: 900px; max-height: 90vh; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); overflow: hidden; position: relative; display: flex; flex-direction: column; animation: slideIn 0.3s ease;">
+            <button onclick="closeAdminModal()" style="position: absolute; right: 15px; top: 15px; background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #888; z-index: 10;">&times;</button>
+            
+            <div style="padding: 20px; border-bottom: 1px solid var(--border-color); background: var(--primary-color); color: var(--pure-white);">
+                <h3 style="margin: 0; font-size: 1.3rem; display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-lock" style="color: var(--pure-white);"></i> System Admin Dashboard</h3>
+            </div>
+            
+            <div style="display: flex; border-bottom: 1px solid var(--border-color); background: var(--light-color);">
+                <button id="admin-tab-stats" onclick="switchAdminTab('stats')" style="flex: 1; padding: 12px; border: none; background: var(--white); color: var(--text-color); font-weight: 600; cursor: pointer; border-bottom: 3px solid var(--primary-color); color: var(--primary-color);">Analytics & Stats</button>
+                <button id="admin-tab-bookings" onclick="switchAdminTab('bookings')" style="flex: 1; padding: 12px; border: none; background: none; font-weight: 600; cursor: pointer; color: var(--text-color);">Client Bookings</button>
+                <button id="admin-tab-contacts" onclick="switchAdminTab('contacts')" style="flex: 1; padding: 12px; border: none; background: none; font-weight: 600; cursor: pointer; color: var(--text-color);">Contact Inquiries</button>
+                <button id="admin-tab-destinations" onclick="switchAdminTab('destinations')" style="flex: 1; padding: 12px; border: none; background: none; font-weight: 600; cursor: pointer; color: var(--text-color);">Manage Destinations</button>
+            </div>
+            
+            <div style="padding: 20px; overflow-y: auto; flex: 1; background: var(--light-color);">
+                <!-- Stats Section -->
+                <div id="admin-section-stats"></div>
+
+                <!-- Bookings Section -->
+                <div id="admin-section-bookings" style="display: none;"></div>
+
+                <!-- Contacts Section -->
+                <div id="admin-section-contacts" style="display: none;"></div>
+
+                <!-- Destinations CRUD Section -->
+                <div id="admin-section-destinations" style="display: none;">
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;">
+                        <!-- Add destination form -->
+                        <form id="add-destination-form" style="background: var(--white); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); flex: 1; min-width: 300px;">
+                            <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--text-color);">Add New Destination</h4>
+                            <div class="form-group" style="margin-bottom: 10px;">
+                                <label style="font-weight: 500; font-size: 0.85rem; color: var(--text-color);">Destination Name</label>
+                                <input type="text" id="admin-dest-name" required placeholder="Taj Mahal, Agra" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--white); color: var(--text-color);">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 10px;">
+                                <label style="font-weight: 500; font-size: 0.85rem; color: var(--text-color);">Unique ID (lowercase slug)</label>
+                                <input type="text" id="admin-dest-id" required placeholder="agra" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--white); color: var(--text-color);">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 10px;">
+                                <label style="font-weight: 500; font-size: 0.85rem; color: var(--text-color);">Price (e.g. ₹5,000)</label>
+                                <input type="text" id="admin-dest-price" required placeholder="₹5,000" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--white); color: var(--text-color);">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 10px;">
+                                <label style="font-weight: 500; font-size: 0.85rem; color: var(--text-color);">Rating (e.g. 4.9)</label>
+                                <input type="text" id="admin-dest-rating" required placeholder="4.9" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--white); color: var(--text-color);">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 10px;">
+                                <label style="font-weight: 500; font-size: 0.85rem; color: var(--text-color);">Short Description</label>
+                                <textarea id="admin-dest-desc" required rows="2" placeholder="UNESCO site..." style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--white); color: var(--text-color);"></textarea>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label style="font-weight: 500; font-size: 0.85rem; color: var(--text-color);">Image URL</label>
+                                <input type="url" id="admin-dest-img" required placeholder="https://..." style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--white); color: var(--text-color);">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block" style="padding: 10px;">Create Destination</button>
+                            <div id="admin-dest-success" style="display: none; color: #10b981; margin-top: 10px; text-align: center; font-weight: 500;"></div>
+                        </form>
+                        
+                        <!-- Destination list table -->
+                        <div style="flex: 2; min-width: 400px; background: var(--white); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); overflow-x: auto;">
+                            <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--text-color);">Current Destinations</h4>
+                            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; color: var(--text-color);">
+                                <thead>
+                                    <tr style="border-bottom: 2px solid var(--border-color); text-align: left;">
+                                        <th style="padding: 8px;">Name</th>
+                                        <th style="padding: 8px;">ID</th>
+                                        <th style="padding: 8px;">Price</th>
+                                        <th style="padding: 8px; text-align: center;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-destinations-list"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>\n\n    <!-- 4. Reviews & Ratings Modal -->
+    <div id="reviews-modal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+        <div class="modal-card" style="background: var(--white); border: 1px solid var(--border-color); width: 95%; max-width: 550px; max-height: 85vh; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); overflow: hidden; position: relative; display: flex; flex-direction: column; animation: slideIn 0.3s ease;">
+            <button onclick="closeReviewsModal()" style="position: absolute; right: 15px; top: 15px; background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #888; z-index: 10;">&times;</button>
+            
+            <div style="padding: 20px; border-bottom: 1px solid var(--border-color); background: var(--light-color);">
+                <h3 id="reviews-title" style="margin: 0; font-size: 1.3rem; color: var(--text-color); display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-star" style="color: #ffc107;"></i> Reviews & Ratings
+                </h3>
+            </div>
+            
+            <div style="padding: 20px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; background: var(--white); color: var(--text-color);">
+                <!-- Big Score Summary -->
+                <div class="reviews-summary" style="display: flex; gap: 20px; align-items: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+                    <div class="reviews-big-score" id="reviews-avg-box" style="text-align: center; background: var(--light-color); padding: 15px 25px; border-radius: 10px; border: 1px solid var(--border-color);">
+                        <span id="reviews-avg-num" style="display: block; font-size: 2.2rem; font-weight: 800; color: var(--primary-color); line-height: 1;">0.0</span>
+                        <span style="font-size: 0.8rem; color: #888;">Out of 5</span>
+                    </div>
+                    <div>
+                        <div class="reviews-stars-avg" id="reviews-avg-stars" style="color: #ffc107; font-size: 1.25rem; display: flex; gap: 3px; margin-bottom: 5px;">
+                            <!-- JS stars -->
+                        </div>
+                        <p style="margin: 0; font-size: 0.9rem; color: var(--text-color);" id="reviews-count-text">Based on 0 reviews</p>
+                    </div>
+                </div>
+
+                <!-- Reviews list -->
+                <div class="reviews-list" id="reviews-list-container" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; max-height: 250px; overflow-y: auto; padding-right: 5px;">
+                    <!-- JS reviews -->
+                </div>
+
+                <!-- Submission Form (Visible only if logged in) -->
+                <div class="review-form" id="review-form-container" style="display: none; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                    <h4 style="margin-top: 0; margin-bottom: 12px; color: var(--text-color);">Write a Review</h4>
+                    <form id="destination-review-form">
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; color: var(--text-color);">Your Rating</label>
+                            <div class="star-rating-input" id="star-rating-input" style="color: #ccc; font-size: 1.4rem; display: flex; gap: 5px; cursor: pointer;">
+                                <i class="fa-star fa-regular" data-value="1"></i>
+                                <i class="fa-star fa-regular" data-value="2"></i>
+                                <i class="fa-star fa-regular" data-value="3"></i>
+                                <i class="fa-star fa-regular" data-value="4"></i>
+                                <i class="fa-star fa-regular" data-value="5"></i>
+                            </div>
+                            <input type="hidden" id="review-rating-value" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label for="review-comment-text" style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; color: var(--text-color);">Your Review Comment</label>
+                            <textarea id="review-comment-text" rows="3" placeholder="Tell others about your experience..." style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--white); color: var(--text-color); border-radius: 6px; font-size: 0.9rem; outline: none; resize: none;"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="padding: 8px 20px; font-size: 0.9rem;">Submit Review</button>
+                    </form>
+                </div>
+                
+                <!-- Notice if not logged in -->
+                <div id="review-login-notice" style="text-align: center; padding: 15px; background: var(--light-color); border-radius: 6px; border: 1px solid var(--border-color); margin-top: 10px;">
+                    <p style="margin: 0; font-size: 0.9rem; color: var(--text-color); font-weight: 500;">
+                        Please <a href="#" id="reviews-login-link" style="color: var(--primary-color); font-weight: 700; text-decoration: underline;">Login</a> to write a review.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>\n\n    <!-- Floating Theme Switcher Button -->\n    <button id="theme-toggle-float" class="theme-toggle-float" aria-label="Toggle Theme" title="Toggle Theme">\n        <i class="fa-solid fa-moon"></i>\n    </button>\n\n    <!-- Razorpay Checkout Script -->\n    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>\n    <script src="script.js"></script>
+</body>
+</html>
