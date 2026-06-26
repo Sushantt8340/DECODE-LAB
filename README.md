@@ -74,8 +74,8 @@
 
 ```text
 DECODE-LAB/
-├── PROJECT01/
-│   ├── FRONTED/                  # Static Frontend Files
+|
+│---├── FRONTED/                  # Static Frontend Files
 │   │   ├── images/               # Image assets
 │   │   ├── index.html            # Core Single Page HTML structure
 │   │   ├── style.css             # Vanilla CSS design tokens & animations
@@ -181,3 +181,7 @@ DECODE-LAB/
 
 ---
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> f665ebc06306460f6a8d19b81c95316647d26a49
