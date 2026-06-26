@@ -17,7 +17,6 @@
 * **MongoDB & Mongoose** – NoSQL database schemas for Users, Destinations, Bookings, Reviews, Notifications, and Contacts.
 * **JWT (JSON Web Tokens)** – Secure token-based session management and route protection middleware.
 * **Bcrypt.js** – Secure password hashing.
-* **Nodemailer** – Automatic HTML email confirmations (with Ethereal sandbox test account fallback).
 * **Razorpay Node SDK** – Online payment gateway integration (supporting real payment keys & sandbox simulator).
 
 ---
