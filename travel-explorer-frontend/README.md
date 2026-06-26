@@ -39,3 +39,4 @@ Use VS Code Live Server.
 * DOM Manipulation
 * JavaScript Event Handling
 * Frontend Development Basics
+   ,   
