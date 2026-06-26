@@ -557,13 +557,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const dest = destinations.find(d => d.name === destName);
+        const dest = destinations.find(d => (d.name || d.title || '') === destName);
         if (!dest) {
             priceDisplayVal.textContent = '₹0';
             return;
         }
 
-        const basePrice = parseInt(dest.price.replace(/[^\d]/g, ''), 10) || 0;
+        const basePrice = parseInt(String(dest.price || '0').replace(/[^\d]/g, ''), 10) || 0;
 
         // Package premiums
         let packageExtra = 0;
@@ -910,9 +910,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Categorization logic based on ID list or description keywords
     const getDestinationCategory = (dest) => {
-        const id = dest.id.toLowerCase();
-        const desc = dest.desc.toLowerCase();
-        const name = dest.name.toLowerCase();
+        if (!dest) return 'other';
+        const id = String(dest.id || dest._id || '').toLowerCase();
+        const desc = String(dest.desc || dest.description || '').toLowerCase();
+        const name = String(dest.name || dest.title || '').toLowerCase();
 
         // 1. Exact ID classification
         const beachIds = ['goa', 'alleppey', 'andaman', 'pondicherry', 'kanyakumari'];
@@ -985,26 +986,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Generate HTML for a single destination card
     const createDestCard = (dest, delay) => {
-        const isWishlisted = currentUser && currentUser.wishlist && currentUser.wishlist.includes(dest.id);
-        const escapedName = dest.name.replace(/'/g, "\\'");
+        const destId = dest.id || dest._id || '';
+        const destName = dest.name || dest.title || '';
+        const destDesc = dest.desc || dest.description || '';
+        const destImg = dest.img || dest.image || '';
+        const destPrice = dest.price || '';
+        const destRating = dest.rating || '4.5';
+        
+        const isWishlisted = currentUser && currentUser.wishlist && currentUser.wishlist.includes(destId);
+        const escapedName = destName.replace(/'/g, "\\'");
         
         return `
             <div class="destination-card animate-on-scroll" style="transition-delay: ${delay}s;">
                 <div class="card-img-wrapper">
-                    <div class="card-price">From ${dest.price}</div>
-                    <button class="wishlist-btn ${isWishlisted ? 'active' : ''}" data-dest-id="${dest.id}" onclick="toggleWishlist(event, '${dest.id}')" title="Save to Wishlist">
+                    <div class="card-price">From ${destPrice}</div>
+                    <button class="wishlist-btn ${isWishlisted ? 'active' : ''}" data-dest-id="${destId}" onclick="toggleWishlist(event, '${destId}')" title="Save to Wishlist">
                         <i class="${isWishlisted ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
                     </button>
-                    <img src="${dest.img}" alt="${dest.name}" loading="lazy" onerror="this.onerror=null;this.style.objectFit='none';this.style.background='linear-gradient(135deg,#1a1a2e,#16213e)';this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'260\' viewBox=\'0 0 400 260\'%3E%3Crect fill=\'%231a1a2e\' width=\'400\' height=\'260\'/%3E%3Ctext fill=\'%23ffffff44\' font-size=\'40\' text-anchor=\'middle\' x=\'200\' y=\'140\'%3E🏛%3C/text%3E%3C/svg%3E';">
+                    <img src="${destImg}" alt="${destName}" loading="lazy" onerror="this.onerror=null;this.style.objectFit='none';this.style.background='linear-gradient(135deg,#1a1a2e,#16213e)';this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'260\' viewBox=\'0 0 400 260\'%3E%3Crect fill=\'%231a1a2e\' width=\'400\' height=\'260\'/%3E%3Ctext fill=\'%23ffffff44\' font-size=\'40\' text-anchor=\'middle\' x=\'200\' y=\'140\'%3E🏛%3C/text%3E%3C/svg%3E';">
                 </div>
                 <div class="card-content">
                     <div class="card-location"><i class="fa-solid fa-map-pin"></i> India</div>
-                    <h3 class="card-title">${dest.name}</h3>
-                    <p class="card-desc">${dest.desc}</p>
+                    <h3 class="card-title">${destName}</h3>
+                    <p class="card-desc">${destDesc}</p>
                     <div class="card-footer">
-                        <div class="card-rating" data-dest-id="${dest.id}" onclick="openReviewsModal('${dest.id}', '${escapedName}')" title="View Reviews">
+                        <div class="card-rating" data-dest-id="${destId}" onclick="openReviewsModal('${destId}', '${escapedName}')" title="View Reviews">
                             <i class="fa-solid fa-star"></i>
-                            <span class="rating-num">${dest.rating}</span>
+                            <span class="rating-num">${destRating}</span>
                             <span class="reviews-count">(...)</span>
                         </div>
                         <a href="#contact" class="btn btn-primary-outline" style="padding: 6px 15px; font-size: 0.9rem;">Book</a>
@@ -1387,7 +1395,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const markReadBtn = isUnread 
-                ? `<button onclick="markNotificationRead('${nt.id}', event)" style="background: none; border: none; color: var(--primary-color); font-weight: 600; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 4px; transition: background 0.2s;"><i class="fa-solid fa-check"></i> Mark read</button>`
+                ? `<button onclick="markNotificationRead('${nt.id || nt._id}', event)" style="background: none; border: none; color: var(--primary-color); font-weight: 600; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 4px; transition: background 0.2s;"><i class="fa-solid fa-check"></i> Mark read</button>`
                 : '';
 
             html += `
@@ -1431,8 +1439,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         showToast(`You have ${unreadCount} unread notification(s). Check your Notification Center!`, 'info');
                     }
                 } else if (quiet && newUnreadList.length > oldUnreadCount) {
-                    const oldIds = userNotificationsList.map(n => n.id);
-                    const newlyArrived = newUnreadList.find(n => !oldIds.includes(n.id));
+                    const oldIds = userNotificationsList.map(n => n.id || n._id);
+                    const newlyArrived = newUnreadList.find(n => !oldIds.includes(n.id || n._id));
                     if (newlyArrived) {
                         showToast(`New Notification: ${newlyArrived.title}`, 'info');
                     }
@@ -1463,7 +1471,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const data = await res.json();
             if (data.success) {
-                const idx = userNotificationsList.findIndex(n => n.id === id);
+                const idx = userNotificationsList.findIndex(n => (n.id || n._id) === id);
                 if (idx !== -1) {
                     userNotificationsList[idx].read = true;
                 }
