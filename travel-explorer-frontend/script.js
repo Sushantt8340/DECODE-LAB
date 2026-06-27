@@ -567,7 +567,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Calculate and update total price
+    // --- WEATHER DATABASE AND LOOKUP ---
+    const WEATHER_DB = {
+        'Taj Mahal': { temp: '32°C', cond: 'Sunny / Warm', rain: '5%', advice: 'Best visited early morning. Wear comfortable walking shoes and carry sunscreen.' },
+        'Kerala Backwaters': { temp: '29°C', cond: 'Humid / Light Rain', rain: '45%', advice: 'Bring an umbrella. Pack light, breathable linen clothes and mosquito repellent.' },
+        'Nubra Valley': { temp: '14°C', cond: 'Clear / Cold', rain: '2%', advice: 'Cold winds. Heavy woolen clothes, thermal layers, and hydration are essential.' },
+        'Hawa Mahal': { temp: '35°C', cond: 'Sunny / Hot', rain: '8%', advice: 'Hot afternoons. Stay hydrated. Wear sunscreen and a wide-brimmed hat.' },
+        'Calangute Beach': { temp: '30°C', cond: 'Pleasant / Breezy', rain: '15%', advice: 'Great beach weather. Pack sunscreen, swimwear, shorts, and flip-flops.' },
+        'Varanasi Ghats': { temp: '31°C', cond: 'Humid / Clear', rain: '12%', advice: 'Modest clothing recommended. Best time for boat ride is sunrise or sunset.' }
+    };
+
+    const getWeatherData = (destName) => {
+        return WEATHER_DB[destName] || { temp: '26°C', cond: 'Mild / Clear', rain: '10%', advice: 'Pack comfortable clothes. Check local festival guidelines.' };
+    };
+
+    let activePromoCode = '';
+    let activeDiscountAmount = 0;
+
+    // Calculate and update total price with itemized budget breakdown
     const updateTotalPrice = () => {
         if (!destInput || !adultsInput || !kidsInput || !packageInput || !priceDisplayVal) return;
         
@@ -593,10 +610,60 @@ document.addEventListener('DOMContentLoaded', () => {
         const adults = parseInt(adultsInput.value, 10) || 1;
         const kids = parseInt(kidsInput.value, 10) || 0;
 
-        // Formula: Total Price = (Base Price + Package Extra) * Adults + (1500 + Package Extra) * Kids
-        const totalPrice = (basePrice + packageExtra) * adults + (1500 + packageExtra) * kids;
+        // Formula: Base price + package upgrade + GST
+        const baseCost = basePrice * adults + 1500 * kids;
+        const transportCost = packageExtra * (adults + kids);
+        const subtotal = baseCost + transportCost;
+        const gst = Math.round(subtotal * 0.18);
+        const preDiscountTotal = subtotal + gst;
 
-        priceDisplayVal.textContent = '₹' + totalPrice.toLocaleString('en-IN');
+        // Calculate discount
+        activeDiscountAmount = 0;
+        if (activePromoCode === 'BHARAT10') {
+            activeDiscountAmount = Math.round(preDiscountTotal * 0.10);
+        } else if (activePromoCode === 'EXPLORE20') {
+            activeDiscountAmount = Math.round(preDiscountTotal * 0.20);
+        } else if (activePromoCode === 'FIRSTTRIP') {
+            activeDiscountAmount = Math.min(preDiscountTotal, 2000);
+        }
+
+        const finalTotal = Math.max(0, preDiscountTotal - activeDiscountAmount);
+
+        // Update Budget Breakdown DOM
+        const breakdownBase = document.getElementById('breakdown-base');
+        const breakdownTransport = document.getElementById('breakdown-transport');
+        const breakdownGst = document.getElementById('breakdown-gst');
+        const discountRow = document.getElementById('breakdown-discount-row');
+        const breakdownDiscount = document.getElementById('breakdown-discount');
+
+        if (breakdownBase) breakdownBase.textContent = '₹' + baseCost.toLocaleString('en-IN');
+        if (breakdownTransport) breakdownTransport.textContent = '₹' + transportCost.toLocaleString('en-IN');
+        if (breakdownGst) breakdownGst.textContent = '₹' + gst.toLocaleString('en-IN');
+        
+        if (activeDiscountAmount > 0) {
+            if (discountRow) discountRow.style.display = 'flex';
+            if (breakdownDiscount) breakdownDiscount.textContent = '-₹' + activeDiscountAmount.toLocaleString('en-IN');
+        } else {
+            if (discountRow) discountRow.style.display = 'none';
+        }
+
+        priceDisplayVal.textContent = '₹' + finalTotal.toLocaleString('en-IN');
+
+        // Update Live Weather Advisory Widget
+        const weatherWidget = document.getElementById('weather-advisory-widget');
+        if (weatherWidget) {
+            const wData = getWeatherData(destName);
+            const wTempEl = document.getElementById('weather-temp');
+            const wCondEl = document.getElementById('weather-cond');
+            const wRainEl = document.getElementById('weather-rain');
+            const wAdvEl = document.getElementById('weather-advisory');
+
+            if (wTempEl) wTempEl.textContent = wData.temp;
+            if (wCondEl) wCondEl.textContent = wData.cond;
+            if (wRainEl) wRainEl.textContent = 'Rain: ' + wData.rain;
+            if (wAdvEl) wAdvEl.textContent = wData.advice;
+            weatherWidget.style.display = 'block';
+        }
     };
 
     const hideBookingFields = () => {
@@ -604,8 +671,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (document.getElementById('guests-row')) document.getElementById('guests-row').style.display = 'none';
         if (document.getElementById('package-group')) document.getElementById('package-group').style.display = 'none';
         if (document.getElementById('price-display-group')) document.getElementById('price-display-group').style.display = 'none';
+        if (document.getElementById('budget-breakdown-group')) document.getElementById('budget-breakdown-group').style.display = 'none';
+        if (document.getElementById('promo-group')) document.getElementById('promo-group').style.display = 'none';
+        if (document.getElementById('weather-advisory-widget')) document.getElementById('weather-advisory-widget').style.display = 'none';
         if (paymentOptionsGroup) paymentOptionsGroup.style.display = 'none';
         
+        // Reset promo codes
+        activePromoCode = '';
+        activeDiscountAmount = 0;
+        const promoInput = document.getElementById('promo-code');
+        if (promoInput) promoInput.value = '';
+        const promoMsg = document.getElementById('promo-msg');
+        if (promoMsg) promoMsg.style.display = 'none';
+
         if (dateInput) dateInput.value = '';
         if (adultsInput) adultsInput.value = '1';
         if (kidsInput) kidsInput.value = '0';
@@ -630,12 +708,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const guestsRow = document.getElementById('guests-row');
             const packageGroup = document.getElementById('package-group');
             const priceDisplayGroup = document.getElementById('price-display-group');
+            const budgetGroup = document.getElementById('budget-breakdown-group');
+            const promoGroup = document.getElementById('promo-group');
 
             if (isSpecificDest) {
                 if (dateGroup) dateGroup.style.display = 'block';
                 if (guestsRow) guestsRow.style.display = 'flex';
                 if (packageGroup) packageGroup.style.display = 'block';
                 if (priceDisplayGroup) priceDisplayGroup.style.display = 'block';
+                if (budgetGroup) budgetGroup.style.display = 'block';
+                if (promoGroup) promoGroup.style.display = 'block';
                 if (paymentOptionsGroup) paymentOptionsGroup.style.display = 'block';
                 updateTotalPrice();
             } else {
@@ -1038,6 +1120,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="wishlist-btn ${isWishlisted ? 'active' : ''}" data-dest-id="${destId}" onclick="toggleWishlist(event, '${destId}')" title="Save to Wishlist">
                         <i class="${isWishlisted ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
                     </button>
+                    <!-- 360 Virtual Tour Button -->
+                    <button class="tour-360-btn" onclick="openVirtualTour(event, '${escapedName}')" title="360° Virtual Tour" style="position: absolute; top: 15px; right: 15px; background: var(--white); opacity: 0.9; border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.15); color: var(--primary-color); font-size: 1rem; transition: all 0.3s ease;">
+                        <i class="fa-solid fa-vr-cardboard"></i>
+                    </button>
+                    <!-- Compare Checkbox Label -->
+                    <label style="position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.7); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; z-index: 5;" onclick="event.stopPropagation()">
+                        <input type="checkbox" class="compare-checkbox" data-dest-id="${destId}" data-dest-name="${escapedName}" onchange="toggleCompareDestination(this)" style="cursor: pointer;"> Compare
+                    </label>
                     <img src="${destImg}" alt="${destName}" loading="lazy" onerror="this.onerror=null;this.style.objectFit='none';this.style.background='linear-gradient(135deg,#1a1a2e,#16213e)';this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'260\' viewBox=\'0 0 400 260\'%3E%3Crect fill=\'%231a1a2e\' width=\'400\' height=\'260\'/%3E%3Ctext fill=\'%23ffffff44\' font-size=\'40\' text-anchor=\'middle\' x=\'200\' y=\'140\'%3E🏛%3C/text%3E%3C/svg%3E';">
                 </div>
                 <div class="card-content">
@@ -1132,6 +1222,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Fetch dynamic reviews statistics and update stars on loaded cards
         updateCardRatings();
+
+        // Sync compare checkboxes
+        if (window.syncCompareCheckboxes) window.syncCompareCheckboxes();
 
         // Animate elements on scroll
         const newElements = destGrid.querySelectorAll('.animate-on-scroll:not(.show)');
@@ -1271,12 +1364,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const tabs = [
             { name: 'bookings', btn: custTabBookings, container: userBookingsContainer },
             { name: 'notifications', btn: custTabNotifications, container: userNotificationsContainer },
-            { name: 'wishlist', btn: document.getElementById('cust-tab-wishlist'), container: document.getElementById('user-wishlist-container') }
+            { name: 'wishlist', btn: document.getElementById('cust-tab-wishlist'), container: document.getElementById('user-wishlist-container') },
+            { name: 'splitter', btn: document.getElementById('cust-tab-splitter'), container: document.getElementById('user-splitter-container') },
+            { name: 'planner', btn: document.getElementById('cust-tab-planner'), container: document.getElementById('user-planner-container') }
         ];
 
         tabs.forEach(t => {
             if (t.btn) {
-                t.btn.style.color = '#666';
+                t.btn.style.color = '#888';
                 t.btn.style.borderBottom = 'none';
             }
             if (t.container) {
@@ -1299,6 +1394,13 @@ document.addEventListener('DOMContentLoaded', () => {
             renderUserNotifications();
         } else if (tabName === 'wishlist') {
             renderWishlist();
+        } else if (tabName === 'splitter') {
+            if (window.renderSplitterMembers) window.renderSplitterMembers();
+            if (window.updateSplitterDropdowns) window.updateSplitterDropdowns();
+            if (window.renderSplitterExpenses) window.renderSplitterExpenses();
+            if (window.calculateSplitterBalances) window.calculateSplitterBalances();
+        } else if (tabName === 'planner') {
+            // No action needed as planner loads per booking selection
         }
     };
     window.switchCustomerTab = switchCustomerTab;
@@ -1325,6 +1427,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.success && Array.isArray(data.data)) {
                 renderUserBookings(data.data);
+                if (window.updatePlannerBookingSelect) window.updatePlannerBookingSelect(data.data);
+                if (window.renderSplitterMembers) window.renderSplitterMembers();
+                if (window.updateSplitterDropdowns) window.updateSplitterDropdowns();
+                if (window.renderSplitterExpenses) window.renderSplitterExpenses();
+                if (window.calculateSplitterBalances) window.calculateSplitterBalances();
             } else {
                 if (userBookingsContainer) {
                     userBookingsContainer.innerHTML = `<div style="color: #ef4444; text-align: center; padding: 20px; font-weight: 500;">Failed: ${data.message}</div>`;
@@ -1382,18 +1489,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             html += `
-                <div style="background: var(--white); border: 1px solid var(--border-color); border-radius: 8px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-                    <div>
-                        <h4 style="margin: 0 0 5px 0; font-size: 1.1rem; color: var(--dark-color);">${bk.destination}</h4>
-                        <p style="margin: 0 0 5px 0; font-size: 0.9rem; color: var(--text-color);"><i class="fa-solid fa-calendar-days"></i> Travel Date: <strong>${dateStr}</strong></p>
-                        <p style="margin: 0 0 5px 0; font-size: 0.85rem; color: var(--text-color);">Guests: ${bk.adults} Adults, ${bk.kids} Kids | Package: <span style="text-transform: capitalize;"><strong>${bk.packageType}</strong></span></p>
-                        <p style="margin: 0; font-size: 0.85rem; color: var(--text-color); opacity: 0.7;">Booking ID: ${bk.id}</p>
+                <div style="background: var(--white); border: 1px solid var(--border-color); border-radius: 8px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); display: flex; flex-direction: column; gap: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; width: 100%;">
+                        <div>
+                            <h4 style="margin: 0 0 5px 0; font-size: 1.1rem; color: var(--dark-color);">${bk.destination}</h4>
+                            <p style="margin: 0 0 5px 0; font-size: 0.9rem; color: var(--text-color);"><i class="fa-solid fa-calendar-days"></i> Travel Date: <strong>${dateStr}</strong></p>
+                            <p style="margin: 0 0 5px 0; font-size: 0.85rem; color: var(--text-color);">Guests: ${bk.adults} Adults, ${bk.kids} Kids | Package: <span style="text-transform: capitalize;"><strong>${bk.packageType}</strong></span></p>
+                            <p style="margin: 0; font-size: 0.85rem; color: var(--text-color); opacity: 0.7;">Booking ID: ${bk.id}</p>
+                        </div>
+                        <div style="text-align: right; min-width: 120px; display: flex; flex-direction: column; align-items: flex-end;">
+                            <div style="font-size: 1.25rem; font-weight: 700; color: var(--primary-color); margin-bottom: 8px;">₹${bk.totalPrice.toLocaleString('en-IN')}</div>
+                            <div>${statusBadge}</div>
+                            ${pdfButton}
+                        </div>
                     </div>
-                    <div style="text-align: right; min-width: 120px; display: flex; flex-direction: column; align-items: flex-end;">
-                        <div style="font-size: 1.25rem; font-weight: 700; color: var(--primary-color); margin-bottom: 8px;">₹${bk.totalPrice.toLocaleString('en-IN')}</div>
-                        <div>${statusBadge}</div>
-                        ${pdfButton}
-                    </div>
+                    ${generateTimelineHtml(bk.destination, bk.id)}
                 </div>
             `;
         });
@@ -2506,6 +2616,12 @@ document.addEventListener('DOMContentLoaded', () => {
                                 }
                             }
 
+                            const photoHtml = rev.photo ? `
+                                <div class="review-photos-grid">
+                                    <img src="${rev.photo}" class="review-photo-item" onclick="window.open(this.src, '_blank')" alt="Traveler Photo">
+                                </div>
+                            ` : '';
+
                             reviewsHtml += `
                                 <div class="review-item">
                                     <div class="review-header">
@@ -2518,6 +2634,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                         </div>
                                     </div>
                                     <p class="review-comment">${rev.comment || 'No comment left.'}</p>
+                                    ${photoHtml}
                                 </div>
                             `;
                         });
@@ -2556,6 +2673,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const resetReviewForm = () => {
         const form = document.getElementById('destination-review-form');
         if (form) form.reset();
+        clearReviewPhotoPreview();
         if (ratingInputContainer) {
             ratingInputContainer.querySelectorAll('i').forEach(s => {
                 s.classList.remove('fa-solid', 'active');
@@ -2564,6 +2682,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (ratingValueInput) ratingValueInput.value = '';
     };
+
+    let reviewPhotoBase64 = '';
+    const reviewPhotoInput = document.getElementById('review-photo-file');
+    const reviewPhotoPreview = document.getElementById('review-photo-preview');
+
+    if (reviewPhotoInput) {
+        reviewPhotoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 1 * 1024 * 1024) { // 1MB limit
+                    showToast('Photo size must be less than 1MB', 'error');
+                    reviewPhotoInput.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    reviewPhotoBase64 = event.target.result;
+                    if (reviewPhotoPreview) {
+                        reviewPhotoPreview.style.backgroundImage = `url(${reviewPhotoBase64})`;
+                        reviewPhotoPreview.style.display = 'block';
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    const clearReviewPhotoPreview = () => {
+        reviewPhotoBase64 = '';
+        if (reviewPhotoInput) reviewPhotoInput.value = '';
+        if (reviewPhotoPreview) {
+            reviewPhotoPreview.style.backgroundImage = '';
+            reviewPhotoPreview.style.display = 'none';
+        }
+    };
+    window.clearReviewPhotoPreview = clearReviewPhotoPreview;
 
     const reviewForm = document.getElementById('destination-review-form');
     if (reviewForm) {
@@ -2586,7 +2740,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({
                     destinationId: activeReviewDestId,
                     rating: ratingVal,
-                    comment: commentVal
+                    comment: commentVal,
+                    photo: reviewPhotoBase64
                 })
             })
             .then(res => res.json())
@@ -2636,6 +2791,755 @@ document.addEventListener('DOMContentLoaded', () => {
             if (passwordInput && savedPassword) passwordInput.value = savedPassword;
         }
     }
+    autofillSavedCredentials();
+
+    // --- G. CONFETTI ANIMATION ---
+    const startConfetti = () => {
+        const canvas = document.getElementById('confetti-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = canvas.parentElement.clientHeight;
+
+        let particles = [];
+        const colors = ['#ff6f61', '#ffb3a7', '#48dbfb', '#1dd1a1', '#feca57'];
+
+        for (let i = 0; i < 60; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height - canvas.height,
+                r: Math.random() * 6 + 4,
+                d: Math.random() * canvas.height,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                tilt: Math.random() * 10 - 5,
+                tiltAngleIncremental: Math.random() * 0.07 + 0.02,
+                tiltAngle: 0
+            });
+        }
+
+        let animationId;
+        const draw = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p, index) => {
+                p.tiltAngle += p.tiltAngleIncremental;
+                p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+                p.x += Math.sin(p.tiltAngle);
+                p.tilt = Math.sin(p.tiltAngle - index / 3) * 15;
+
+                ctx.beginPath();
+                ctx.lineWidth = p.r;
+                ctx.strokeStyle = p.color;
+                ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+                ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+                ctx.stroke();
+            });
+
+            const active = particles.some(p => p.y < canvas.height);
+            if (active) {
+                animationId = requestAnimationFrame(draw);
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                cancelAnimationFrame(animationId);
+            }
+        };
+        draw();
+    };
+
+    // --- H. Promo Code Apply Event ---
+    const promoCodeBtn = document.getElementById('apply-promo-btn');
+    if (promoCodeBtn) {
+        promoCodeBtn.addEventListener('click', () => {
+            const promoInput = document.getElementById('promo-code');
+            const promoMsg = document.getElementById('promo-msg');
+            if (!promoInput || !promoMsg) return;
+
+            const code = promoInput.value.trim().toUpperCase();
+            if (!code) {
+                promoMsg.style.color = '#ef4444';
+                promoMsg.textContent = 'Please enter a coupon code.';
+                promoMsg.style.display = 'block';
+                return;
+            }
+
+            const validCodes = ['BHARAT10', 'EXPLORE20', 'FIRSTTRIP'];
+            if (validCodes.includes(code)) {
+                activePromoCode = code;
+                updateTotalPrice();
+                promoMsg.style.color = '#10b981';
+                let discountText = '';
+                if (code === 'BHARAT10') discountText = '10% discount applied!';
+                else if (code === 'EXPLORE20') discountText = '20% discount applied!';
+                else if (code === 'FIRSTTRIP') discountText = '₹2,000 discount applied!';
+                
+                promoMsg.textContent = `Success! ${discountText}`;
+                promoMsg.style.display = 'block';
+                startConfetti();
+                showToast('Promo code applied successfully!', 'success');
+            } else {
+                promoMsg.style.color = '#ef4444';
+                promoMsg.textContent = 'Invalid promo code. Try BHARAT10 or FIRSTTRIP.';
+                promoMsg.style.display = 'block';
+                activePromoCode = '';
+                updateTotalPrice();
+            }
+        });
+    }
+
+    // --- I. Destination Comparison Logic ---
+    let compareDestinations = [];
+    const compareBar = document.getElementById('compare-bar');
+    const compareCount = document.getElementById('compare-count');
+
+    const toggleCompareDestination = (checkbox) => {
+        const id = checkbox.getAttribute('data-dest-id');
+        const name = checkbox.getAttribute('data-dest-name');
+
+        if (checkbox.checked) {
+            if (compareDestinations.length >= 3) {
+                showToast('You can compare up to 3 destinations only.', 'error');
+                checkbox.checked = false;
+                return;
+            }
+            const dest = destinations.find(d => d.id === id || d._id === id);
+            if (dest) {
+                compareDestinations.push(dest);
+            }
+        } else {
+            compareDestinations = compareDestinations.filter(d => d.id !== id && d._id !== id);
+        }
+
+        updateCompareBar();
+    };
+
+    const updateCompareBar = () => {
+        if (!compareBar || !compareCount) return;
+        if (compareDestinations.length > 0) {
+            compareCount.textContent = compareDestinations.length;
+            compareBar.style.display = 'flex';
+        } else {
+            compareBar.style.display = 'none';
+        }
+        syncCompareCheckboxes();
+    };
+
+    const clearComparison = () => {
+        compareDestinations = [];
+        updateCompareBar();
+    };
+
+    const openCompareModal = () => {
+        if (compareDestinations.length < 2) {
+            showToast('Please select at least 2 destinations to compare.', 'info');
+            return;
+        }
+
+        const modal = document.getElementById('comparison-modal');
+        const headers = document.getElementById('compare-table-headers');
+        const body = document.getElementById('compare-table-body');
+
+        if (!modal || !headers || !body) return;
+
+        headers.innerHTML = '<th style="padding: 12px; font-weight: 700; width: 25%;">Feature</th>';
+        body.innerHTML = '';
+
+        compareDestinations.forEach(dest => {
+            headers.innerHTML += `
+                <th style="padding: 12px; font-weight: 700; text-align: center; width: ${75 / compareDestinations.length}%;">
+                    <div style="font-weight: 800; color: var(--primary-color); font-size: 1rem;">${dest.name || dest.title}</div>
+                    <div style="font-size: 0.8rem; color: #888; margin-top: 4px;">From ${dest.price}</div>
+                    <button onclick="selectDestinationForBooking('${dest.name || dest.title}'); closeCompareModal();" class="btn btn-primary" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 4px; margin-top: 8px;">Book This</button>
+                </th>
+            `;
+        });
+
+        const features = [
+            { label: 'Estimated Cost', key: 'price' },
+            { label: 'Rating Stars', key: 'rating' },
+            { label: 'Weather Zone', key: 'name', transform: (name) => getWeatherData(name).cond },
+            { label: 'Average Temperature', key: 'name', transform: (name) => getWeatherData(name).temp },
+            { label: 'Key Travel Advice', key: 'name', transform: (name) => getWeatherData(name).advice },
+            { label: 'Short Description', key: 'desc' }
+        ];
+
+        features.forEach(feat => {
+            let rowHtml = `<tr style="border-bottom: 1px solid var(--border-color);"><td style="padding: 12px; font-weight: 700; background: var(--light-color);">${feat.label}</td>`;
+            compareDestinations.forEach(dest => {
+                let val = dest[feat.key] || dest.title || '';
+                if (feat.transform) {
+                    val = feat.transform(dest.name || dest.title);
+                }
+                rowHtml += `<td style="padding: 12px; text-align: center; vertical-align: top; line-height: 1.4;">${val}</td>`;
+            });
+            rowHtml += '</tr>';
+            body.innerHTML += rowHtml;
+        });
+
+        modal.style.display = 'flex';
+    };
+
+    const closeCompareModal = () => {
+        const modal = document.getElementById('comparison-modal');
+        if (modal) modal.style.display = 'none';
+    };
+
+    window.toggleCompareDestination = toggleCompareDestination;
+    window.clearComparison = clearComparison;
+    window.openCompareModal = openCompareModal;
+    window.closeCompareModal = closeCompareModal;
+
+    // --- J. 360° Virtual Tour Logic ---
+    const PANORAMA_DB = {
+        'Taj Mahal': 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=2000&q=80',
+        'Kerala Backwaters': 'https://images.unsplash.com/photo-1593693397690-362cb9666fc2?auto=format&fit=crop&w=2000&q=80',
+        'Nubra Valley': 'https://images.unsplash.com/photo-1589136777351-fdc9c9c8c680?auto=format&fit=crop&w=2000&q=80',
+        'Hawa Mahal': 'https://images.unsplash.com/photo-1477587458883-471a5ed94245?auto=format&fit=crop&w=2000&q=80',
+        'Calangute Beach': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=80',
+        'Varanasi Ghats': 'https://images.unsplash.com/photo-1561361041-c96aa2e42ee0?auto=format&fit=crop&w=2000&q=80'
+    };
+
+    const openVirtualTour = (event, destName) => {
+        if (event) event.stopPropagation();
+
+        const modal = document.getElementById('tour-360-modal');
+        const title = document.getElementById('tour-360-title');
+        const frame = document.getElementById('tour-360-pan-frame');
+
+        if (!modal || !frame) return;
+
+        const imgUrl = PANORAMA_DB[destName] || 'https://images.unsplash.com/photo-1506125840744-167167210587?auto=format&fit=crop&w=2000&q=80';
+        
+        if (title) title.innerHTML = `<i class="fa-solid fa-vr-cardboard" style="color: var(--primary-color);"></i> 360° Virtual Tour: ${destName}`;
+        
+        frame.style.backgroundImage = `url(${imgUrl})`;
+        frame.style.left = '0px';
+
+        modal.style.display = 'flex';
+        init360DragHandler();
+    };
+
+    let isPanning360 = false;
+    let startPanX = 0;
+    let currentLeftOffset = 0;
+
+    const init360DragHandler = () => {
+        const container = document.getElementById('tour-360-viewer-container');
+        const frame = document.getElementById('tour-360-pan-frame');
+
+        if (!container || !frame) return;
+
+        const onMouseDown = (e) => {
+            isPanning360 = true;
+            startPanX = e.clientX || (e.touches && e.touches[0].clientX);
+            currentLeftOffset = parseInt(frame.style.left || '0', 10);
+            frame.style.cursor = 'grabbing';
+        };
+
+        const onMouseMove = (e) => {
+            if (!isPanning360) return;
+            const x = e.clientX || (e.touches && e.touches[0].clientX);
+            const dx = x - startPanX;
+            let newLeft = currentLeftOffset + dx;
+
+            const minLeft = container.clientWidth - 2500;
+            if (newLeft > 0) newLeft = 0;
+            if (newLeft < minLeft) newLeft = minLeft;
+
+            frame.style.left = `${newLeft}px`;
+        };
+
+        const onMouseUp = () => {
+            isPanning360 = false;
+            frame.style.cursor = 'grab';
+        };
+
+        container.removeEventListener('mousedown', onMouseDown);
+        container.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('mouseup', onMouseUp);
+
+        container.removeEventListener('touchstart', onMouseDown);
+        container.removeEventListener('touchmove', onMouseMove);
+        window.removeEventListener('touchend', onMouseUp);
+
+        container.addEventListener('mousedown', onMouseDown);
+        container.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+
+        container.addEventListener('touchstart', onMouseDown, { passive: true });
+        container.addEventListener('touchmove', onMouseMove, { passive: true });
+        window.addEventListener('touchend', onMouseUp);
+    };
+
+    const closeVirtualTourModal = () => {
+        const modal = document.getElementById('tour-360-modal');
+        if (modal) modal.style.display = 'none';
+    };
+
+    window.openVirtualTour = openVirtualTour;
+    window.closeVirtualTourModal = closeVirtualTourModal;
+
+    // --- K. Day Itinerary Timeline Data ---
+    const ITINERARY_POOL = {
+        'Taj Mahal': [
+            { id: 'att-1', title: 'Taj Mahal Sunrise Visit' },
+            { id: 'att-2', title: 'Agra Fort Guided Tour' },
+            { id: 'att-3', title: 'Tomb of Itmad-ud-Daulah' },
+            { id: 'att-4', title: 'Mehtab Bagh Sunset Views' },
+            { id: 'att-5', title: 'Fatehpur Sikri Excursion' },
+            { id: 'att-6', title: 'Sadar Bazaar Shopping Tour' }
+        ],
+        'Kerala Backwaters': [
+            { id: 'att-1', title: 'Houseboat Cruise Check-in' },
+            { id: 'att-2', title: 'Kumarakom Bird Sanctuary' },
+            { id: 'att-3', title: 'Vembanad Lake Canoeing' },
+            { id: 'att-4', title: 'Fort Kochi Kathakali Center' },
+            { id: 'att-5', title: 'Marari Beach Relaxation' },
+            { id: 'att-6', title: 'Spices Market Shopping' }
+        ],
+        'Nubra Valley': [
+            { id: 'att-1', title: 'Bactrian Camel Safari' },
+            { id: 'att-2', title: 'Diskit Monastery Visit' },
+            { id: 'att-3', title: 'Khardung La Pass Scenic Drive' },
+            { id: 'att-4', title: 'Hunder Sand Dunes Walk' },
+            { id: 'att-5', title: 'Panamik Hot Springs Dip' },
+            { id: 'att-6', title: 'Stargazing in Nubra' }
+        ],
+        'Hawa Mahal': [
+            { id: 'att-1', title: 'Hawa Mahal Palace Tour' },
+            { id: 'att-2', title: 'Amer Fort Elephant Ride' },
+            { id: 'att-3', title: 'City Palace Museum Walk' },
+            { id: 'att-4', title: 'Jantar Mantar Observatory' },
+            { id: 'att-5', title: 'Chokhi Dhani Dinner Event' },
+            { id: 'att-6', title: 'Johari Bazaar Shopping' }
+        ],
+        'Calangute Beach': [
+            { id: 'att-1', title: 'Water Sports at Calangute' },
+            { id: 'att-2', title: 'Aguada Fort Exploration' },
+            { id: 'att-3', title: 'Dudhsagar Waterfalls Trek' },
+            { id: 'att-4', title: 'Anjuna Flea Market Stroll' },
+            { id: 'att-5', title: 'Baga Beach Shacks Dinner' },
+            { id: 'att-6', title: 'Mandovi River Sunset Cruise' }
+        ],
+        'Varanasi Ghats': [
+            { id: 'att-1', title: 'Subah-e-Banaras Boat Ride' },
+            { id: 'att-2', title: 'Kashi Vishwanath Temple' },
+            { id: 'att-3', title: 'Ganga Aarti Dashashwamedh' },
+            { id: 'att-4', title: 'Sarnath Buddhist Stupas' },
+            { id: 'att-5', title: 'Banarasi Weaving Center' },
+            { id: 'att-6', title: 'Ghats Walks & Street Food' }
+        ]
+    };
+
+    const generateTimelineHtml = (destName, bookingId) => {
+        const pool = ITINERARY_POOL[destName] || [
+            { title: 'Welcome & Hotel Check-in' },
+            { title: 'Local Sightseeing & Market Walking Tour' },
+            { title: 'Scenic Excursion to Nearby Viewpoints' },
+            { title: 'Leisure Activity & Local Cuisines Tasting' },
+            { title: 'Museum & Historical Landmarks visit' },
+            { title: 'Souvenir Shopping & Farewell Check-out' }
+        ];
+
+        const savedNote = localStorage.getItem(`note-bk-${bookingId}`) || '';
+
+        let timelineHtml = `
+            <div style="margin-top: 15px; border-top: 1px dashed var(--border-color); padding-top: 15px; width: 100%;">
+                <h5 style="margin: 0 0 10px 0; font-size: 0.9rem; color: var(--dark-color); display: flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-map-location-dot" style="color: var(--primary-color);"></i> Planned Daily Itinerary
+                </h5>
+                <div class="itinerary-timeline">
+                    <div class="timeline-day">
+                        <div class="timeline-day-title">Day 1: Arrival & Exploration</div>
+                        <div class="timeline-day-desc">• ${pool[0].title}<br>• ${pool[1].title}</div>
+                    </div>
+                    <div class="timeline-day">
+                        <div class="timeline-day-title">Day 2: Core Sightseeing & Adventure</div>
+                        <div class="timeline-day-desc">• ${pool[2].title}<br>• ${pool[3].title}</div>
+                    </div>
+                    <div class="timeline-day" style="margin-bottom: 0;">
+                        <div class="timeline-day-title">Day 3: Cultural Experiences & Departure</div>
+                        <div class="timeline-day-desc">• ${pool[4].title}<br>• ${pool[5].title}</div>
+                    </div>
+                </div>
+                <div style="margin-top: 12px;">
+                    <label style="display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 4px; color: var(--text-color);">My Trip Notes:</label>
+                    <textarea placeholder="Write packing reminders, travel notes..." oninput="saveBookingNote('${bookingId}', this.value)" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); background: var(--light-color); color: var(--text-color); border-radius: 6px; font-size: 0.8rem; outline: none; resize: vertical; min-height: 50px;">${savedNote}</textarea>
+                </div>
+            </div>
+        `;
+        return timelineHtml;
+    };
+
+    const saveBookingNote = (bookingId, value) => {
+        localStorage.setItem(`note-bk-${bookingId}`, value);
+    };
+    window.saveBookingNote = saveBookingNote;
+
+    // --- L. Group Expense Splitter Logic ---
+    let groupMembers = JSON.parse(localStorage.getItem('splitter-members') || '[]');
+    let groupExpenses = JSON.parse(localStorage.getItem('splitter-expenses') || '[]');
+
+    const addSplitterMember = () => {
+        const input = document.getElementById('splitter-member-name');
+        if (!input) return;
+        const name = input.value.trim();
+        if (!name) {
+            showToast('Please enter a name.', 'error');
+            return;
+        }
+        if (groupMembers.includes(name)) {
+            showToast('Member already exists.', 'error');
+            return;
+        }
+        groupMembers.push(name);
+        localStorage.setItem('splitter-members', JSON.stringify(groupMembers));
+        input.value = '';
+        renderSplitterMembers();
+        updateSplitterDropdowns();
+        showToast(`Added ${name} to group`, 'success');
+    };
+
+    const renderSplitterMembers = () => {
+        const list = document.getElementById('splitter-members-list');
+        if (!list) return;
+        list.innerHTML = '';
+        groupMembers.forEach((name, idx) => {
+            list.innerHTML += `
+                <span style="background: var(--light-color); border: 1px solid var(--border-color); padding: 4px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 8px;">
+                    ${name}
+                    <i class="fa-solid fa-xmark" onclick="removeSplitterMember(${idx})" style="cursor: pointer; color: #ef4444;"></i>
+                </span>
+            `;
+        });
+    };
+
+    const removeSplitterMember = (idx) => {
+        const name = groupMembers[idx];
+        groupMembers.splice(idx, 1);
+        localStorage.setItem('splitter-members', JSON.stringify(groupMembers));
+        groupExpenses = groupExpenses.filter(exp => exp.paidBy !== name);
+        localStorage.setItem('splitter-expenses', JSON.stringify(groupExpenses));
+        renderSplitterMembers();
+        updateSplitterDropdowns();
+        renderSplitterExpenses();
+        calculateSplitterBalances();
+    };
+
+    const updateSplitterDropdowns = () => {
+        const select = document.getElementById('splitter-expense-paid-by');
+        if (!select) return;
+        select.innerHTML = '<option value="" disabled selected>Who paid?</option>';
+        groupMembers.forEach(name => {
+            select.innerHTML += `<option value="${name}">${name}</option>`;
+        });
+    };
+
+    const addSplitterExpense = (e) => {
+        e.preventDefault();
+        const paidBy = document.getElementById('splitter-expense-paid-by').value;
+        const amount = parseFloat(document.getElementById('splitter-expense-amount').value);
+        const desc = document.getElementById('splitter-expense-desc').value.trim();
+
+        if (!paidBy || isNaN(amount) || amount <= 0 || !desc) {
+            showToast('Please fill out all fields.', 'error');
+            return;
+        }
+
+        const expense = {
+            id: 'exp_' + Date.now(),
+            paidBy,
+            amount,
+            desc,
+            date: new Date().toLocaleDateString('en-IN')
+        };
+
+        groupExpenses.push(expense);
+        localStorage.setItem('splitter-expenses', JSON.stringify(groupExpenses));
+
+        document.getElementById('splitter-expense-amount').value = '';
+        document.getElementById('splitter-expense-desc').value = '';
+        document.getElementById('splitter-expense-paid-by').selectedIndex = 0;
+
+        renderSplitterExpenses();
+        calculateSplitterBalances();
+        showToast('Expense logged successfully', 'success');
+    };
+
+    const renderSplitterExpenses = () => {
+        const log = document.getElementById('splitter-expenses-log');
+        if (!log) return;
+        if (groupExpenses.length === 0) {
+            log.innerHTML = '<p style="color: #888; text-align: center; padding: 20px; margin: 0;">No expenses logged yet.</p>';
+            return;
+        }
+        log.innerHTML = '';
+        groupExpenses.forEach((exp, idx) => {
+            log.innerHTML += `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-color);">
+                    <div>
+                        <span style="font-weight: 700; color: var(--dark-color);">${exp.desc}</span>
+                        <div style="font-size: 0.75rem; color: #888; margin-top: 2px;">Paid by ${exp.paidBy} on ${exp.date}</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-weight: 700; color: var(--primary-color);">₹${exp.amount.toLocaleString('en-IN')}</span>
+                        <i class="fa-solid fa-trash" onclick="removeSplitterExpense(${idx})" style="cursor: pointer; color: #ef4444; font-size: 0.85rem;"></i>
+                    </div>
+                </div>
+            `;
+        });
+    };
+
+    const removeSplitterExpense = (idx) => {
+        groupExpenses.splice(idx, 1);
+        localStorage.setItem('splitter-expenses', JSON.stringify(groupExpenses));
+        renderSplitterExpenses();
+        calculateSplitterBalances();
+    };
+
+    const calculateSplitterBalances = () => {
+        const settlements = document.getElementById('splitter-settlements');
+        if (!settlements) return;
+
+        if (groupMembers.length < 2 || groupExpenses.length === 0) {
+            settlements.innerHTML = '<p style="color: #888; text-align: center; margin: 0;">No balances to settle.</p>';
+            return;
+        }
+
+        const balances = {};
+        groupMembers.forEach(name => balances[name] = 0);
+
+        const totalExpenses = groupExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+        const perPersonShare = totalExpenses / groupMembers.length;
+
+        groupExpenses.forEach(exp => {
+            if (balances[exp.paidBy] !== undefined) {
+                balances[exp.paidBy] += exp.amount;
+            }
+        });
+
+        groupMembers.forEach(name => {
+            balances[name] -= perPersonShare;
+        });
+
+        const debtors = [];
+        const creditors = [];
+
+        groupMembers.forEach(name => {
+            const bal = Math.round(balances[name] * 100) / 100;
+            if (bal < -0.1) {
+                debtors.push({ name, amount: -bal });
+            } else if (bal > 0.1) {
+                creditors.push({ name, amount: bal });
+            }
+        });
+
+        debtors.sort((a, b) => b.amount - a.amount);
+        creditors.sort((a, b) => b.amount - a.amount);
+
+        const transactions = [];
+        let i = 0, j = 0;
+
+        while (i < debtors.length && j < creditors.length) {
+            const debtor = debtors[i];
+            const creditor = creditors[j];
+
+            const settledAmount = Math.min(debtor.amount, creditor.amount);
+            transactions.push({
+                from: debtor.name,
+                to: creditor.name,
+                amount: Math.round(settledAmount)
+            });
+
+            debtor.amount -= settledAmount;
+            creditor.amount -= settledAmount;
+
+            if (debtor.amount < 0.1) i++;
+            if (creditor.amount < 0.1) j++;
+        }
+
+        if (transactions.length === 0) {
+            settlements.innerHTML = '<p style="color: #10b981; font-weight: 600; text-align: center; margin: 0;"><i class="fa-solid fa-circle-check"></i> All balances are settled!</p>';
+            return;
+        }
+
+        settlements.innerHTML = '<div style="display: flex; flex-direction: column; gap: 8px;">';
+        transactions.forEach(tx => {
+            settlements.innerHTML += `
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 4px;">
+                    <span><strong>${tx.from}</strong> owes <strong>${tx.to}</strong></span>
+                    <span style="color: #ef4444; font-weight: 700;">₹${tx.amount.toLocaleString('en-IN')}</span>
+                </div>
+            `;
+        });
+        settlements.innerHTML += '</div>';
+    };
+
+    window.addSplitterMember = addSplitterMember;
+    window.removeSplitterMember = removeSplitterMember;
+    window.addSplitterExpense = addSplitterExpense;
+    window.removeSplitterExpense = removeSplitterExpense;
+    window.renderSplitterMembers = renderSplitterMembers;
+    window.updateSplitterDropdowns = updateSplitterDropdowns;
+    window.renderSplitterExpenses = renderSplitterExpenses;
+    window.calculateSplitterBalances = calculateSplitterBalances;
+
+    // --- M. Drag-and-Drop Day Planner Logic ---
+    let activePlannerBookingId = '';
+    let plannerDailyPlans = {};
+
+    const updatePlannerBookingSelect = (bookings) => {
+        const select = document.getElementById('planner-booking-select');
+        if (!select) return;
+        select.innerHTML = '<option value="" disabled selected>Select an active booking...</option>';
+        bookings.forEach(bk => {
+            select.innerHTML += `<option value="${bk.id}">${bk.destination} (Booking: ${bk.id})</option>`;
+        });
+    };
+
+    const loadPlannerItinerary = (bookingId) => {
+        activePlannerBookingId = bookingId;
+        const select = document.getElementById('planner-booking-select');
+        const option = select.options[select.selectedIndex];
+        const destText = option.text.split(' (Booking:')[0];
+
+        const grid = document.getElementById('planner-grid');
+        const placeholder = document.getElementById('planner-placeholder');
+
+        if (!grid || !placeholder) return;
+
+        placeholder.style.display = 'none';
+        grid.style.display = 'grid';
+
+        const saved = localStorage.getItem(`planner-plan-${bookingId}`);
+        if (saved) {
+            plannerDailyPlans[bookingId] = JSON.parse(saved);
+        } else {
+            const attractions = ITINERARY_POOL[destText] || [
+                { id: 'att-1', title: 'Arrival & Welcome' },
+                { id: 'att-2', title: 'Local Sightseeing' },
+                { id: 'att-3', title: 'Scenic Excursion' },
+                { id: 'att-4', title: 'Leisure Activity' },
+                { id: 'att-5', title: 'Cultural Landmarks' },
+                { id: 'att-6', title: 'Farewell Checkout' }
+            ];
+            plannerDailyPlans[bookingId] = {
+                day1: [],
+                day2: [],
+                day3: [],
+                pool: [...attractions]
+            };
+        }
+
+        renderPlannerGrid();
+    };
+
+    const renderPlannerGrid = () => {
+        const plan = plannerDailyPlans[activePlannerBookingId];
+        if (!plan) return;
+
+        const poolContainer = document.getElementById('planner-attractions-pool');
+        if (poolContainer) {
+            poolContainer.innerHTML = '';
+            if (plan.pool.length === 0) {
+                poolContainer.innerHTML = '<span style="color: #888; font-size: 0.75rem; text-align: center; margin: 20px 0; display: block; width: 100%;">All items placed!</span>';
+            } else {
+                plan.pool.forEach(item => {
+                    poolContainer.innerHTML += `
+                        <div class="planner-attraction-card" draggable="true" ondragstart="handlePlannerDragStart(event, '${item.id}', 'pool')" id="card-${item.id}">
+                            <span>${item.title}</span> <i class="fa-solid fa-grip-lines" style="color: #ccc; font-size: 0.8rem;"></i>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        for (let dayNum = 1; dayNum <= 3; dayNum++) {
+            const col = document.querySelector(`.planner-day-col[data-day="${dayNum}"]`);
+            if (col) {
+                const dropzone = col.querySelector('.day-dropzone');
+                dropzone.innerHTML = '';
+                const items = plan[`day${dayNum}`] || [];
+                
+                items.forEach(item => {
+                    dropzone.innerHTML += `
+                        <div class="planner-attraction-card" draggable="true" ondragstart="handlePlannerDragStart(event, '${item.id}', 'day${dayNum}')" id="card-${item.id}" style="border-left: 3px solid var(--primary-color);">
+                            <span>${item.title}</span>
+                            <i class="fa-solid fa-xmark" onclick="removePlannerItem('${item.id}', ${dayNum})" style="cursor: pointer; color: #ef4444; font-size: 0.8rem; margin-left: 10px;"></i>
+                        </div>
+                    `;
+                });
+            }
+        }
+    };
+
+    const handlePlannerDragStart = (e, itemId, sourceCol) => {
+        e.dataTransfer.setData('text/plain', itemId);
+        e.dataTransfer.setData('source-col', sourceCol);
+    };
+
+    const allowPlannerDrop = (e) => {
+        e.preventDefault();
+        const col = e.currentTarget;
+        col.classList.add('drag-hover');
+    };
+
+    const handlePlannerDrop = (e, targetDayNum) => {
+        e.preventDefault();
+        const col = e.currentTarget;
+        col.classList.remove('drag-hover');
+
+        const itemId = e.dataTransfer.getData('text/plain');
+        const sourceCol = e.dataTransfer.getData('source-col');
+        const targetCol = `day${targetDayNum}`;
+
+        if (sourceCol === targetCol) return;
+
+        const plan = plannerDailyPlans[activePlannerBookingId];
+        if (!plan) return;
+
+        let itemToMove = null;
+        if (sourceCol === 'pool') {
+            itemToMove = plan.pool.find(i => i.id === itemId);
+            plan.pool = plan.pool.filter(i => i.id !== itemId);
+        } else {
+            itemToMove = plan[sourceCol].find(i => i.id === itemId);
+            plan[sourceCol] = plan[sourceCol].filter(i => i.id !== itemId);
+        }
+
+        if (itemToMove) {
+            plan[targetCol].push(itemToMove);
+            localStorage.setItem(`planner-plan-${activePlannerBookingId}`, JSON.stringify(plan));
+            renderPlannerGrid();
+        }
+    };
+
+    const removePlannerItem = (itemId, dayNum) => {
+        const plan = plannerDailyPlans[activePlannerBookingId];
+        if (!plan) return;
+
+        const sourceCol = `day${dayNum}`;
+        const itemToMove = plan[sourceCol].find(i => i.id === itemId);
+        
+        if (itemToMove) {
+            plan[sourceCol] = plan[sourceCol].filter(i => i.id !== itemId);
+            plan.pool.push(itemToMove);
+            localStorage.setItem(`planner-plan-${activePlannerBookingId}`, JSON.stringify(plan));
+            renderPlannerGrid();
+        }
+    };
+
+    document.querySelectorAll('.planner-day-col').forEach(col => {
+        col.addEventListener('dragleave', () => {
+            col.classList.remove('drag-hover');
+        });
+    });
+
+    window.loadPlannerItinerary = loadPlannerItinerary;
+    window.allowPlannerDrop = allowPlannerDrop;
+    window.handlePlannerDrop = handlePlannerDrop;
+    window.handlePlannerDragStart = handlePlannerDragStart;
+    window.removePlannerItem = removePlannerItem;
+    window.updatePlannerBookingSelect = updatePlannerBookingSelect;
+
     autofillSavedCredentials();
 
     // --- F. Legal Policies & FAQs Accordions / Tabs ---

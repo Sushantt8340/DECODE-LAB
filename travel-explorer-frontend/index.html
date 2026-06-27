@@ -338,10 +338,65 @@
                             <span class="error-msg" id="package-error">Please select a package tier.</span>
                         </div>
 
+                        <!-- Live Weather & Travel Advisory Widget -->
+                        <div id="weather-advisory-widget" style="display: none; margin-bottom: 15px; background: linear-gradient(135deg, rgba(255,111,97,0.08), rgba(255,111,97,0.01)); border: 1px dashed var(--primary-color); border-radius: 8px; padding: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <h4 style="margin: 0; font-size: 0.95rem; color: var(--primary-color); font-weight: 700; display: flex; align-items: center; gap: 6px;">
+                                    <i class="fa-solid fa-cloud-sun"></i> Live Weather & Advisory
+                                </h4>
+                                <span id="weather-temp" style="font-weight: 800; font-size: 1.1rem; color: var(--text-color);">28°C</span>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 15px; font-size: 0.82rem; color: var(--text-color);">
+                                <div style="display: flex; flex-direction: column; gap: 4px; border-right: 1px solid var(--border-color); padding-right: 10px;">
+                                    <span>Status: <strong id="weather-cond" style="color: var(--primary-color);">Sunny</strong></span>
+                                    <span id="weather-rain">Rain: 10%</span>
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <span style="font-weight: 600;">Trip Tips:</span>
+                                    <span id="weather-advisory" style="line-height: 1.4;">Best time to visit. Pack light cottons.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Budget Breakdown -->
+                        <div class="form-group" id="budget-breakdown-group" style="display: none; margin-bottom: 15px; background: var(--light-color); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color);">
+                            <label style="font-weight: 600; margin-bottom: 8px; display: block; color: var(--text-color); font-size: 0.9rem;">Cost Breakdown:</label>
+                            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; color: var(--text-color);">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Base Package Price:</span>
+                                    <span id="breakdown-base">₹0</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Transport & Transfers:</span>
+                                    <span id="breakdown-transport">₹0</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>GST / Service Fee (18%):</span>
+                                    <span id="breakdown-gst">₹0</span>
+                                </div>
+                                <div id="breakdown-discount-row" style="display: none; justify-content: space-between; color: #10b981; font-weight: 600;">
+                                    <span>Discount Applied:</span>
+                                    <span id="breakdown-discount">-₹0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Promo Code System -->
+                        <div class="form-group" id="promo-group" style="display: none; margin-bottom: 15px;">
+                            <label for="promo-code" style="font-weight: 600;">Promo Code</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="promo-code" placeholder="e.g. BHARAT10" style="flex: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--white); color: var(--text-color); text-transform: uppercase;">
+                                <button type="button" id="apply-promo-btn" class="btn btn-secondary" style="padding: 10px 15px;">Apply</button>
+                            </div>
+                            <span id="promo-msg" style="display: none; font-size: 0.85rem; margin-top: 5px; font-weight: 600;"></span>
+                        </div>
+
                         <!-- Upgraded Price Display -->
-                        <div class="form-group" id="price-display-group" style="display: none; background: var(--light-color); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); text-align: center; margin-bottom: 15px;">
+                        <div class="form-group" id="price-display-group" style="display: none; background: var(--light-color); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); text-align: center; margin-bottom: 15px; position: relative;">
                             <span style="font-weight: 600; font-size: 1rem; color: var(--text-color);">Estimated Total Price:</span>
                             <h3 id="total-price-val" style="margin: 5px 0 0 0; color: var(--primary-color); font-size: 1.6rem; font-weight: 800;">₹35,000</h3>
+                            <!-- Confetti Canvas overlay -->
+                            <canvas id="confetti-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; border-radius: 8px;"></canvas>
                         </div>
 
                         <!-- Upgraded Payment Options -->
@@ -500,16 +555,22 @@
             <button onclick="closeDashboardModal()" style="position: absolute; right: 15px; top: 15px; background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #888; z-index: 10;">&times;</button>
             <div style="padding: 20px; border-bottom: 1px solid var(--border-color); background: var(--light-color);">
                 <h3 style="margin: 0; font-size: 1.3rem; color: var(--text-color); display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-circle-user" style="color: var(--primary-color);"></i> Customer Dashboard</h3>
-                <div style="display: flex; gap: 5px; margin-top: 15px;">
-                    <button id="cust-tab-bookings" onclick="switchCustomerTab('bookings')" style="padding: 10px 15px; border: none; background: none; font-weight: 600; font-size: 0.95rem; cursor: pointer; color: var(--primary-color); border-bottom: 3px solid var(--primary-color); display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                <div style="display: flex; gap: 5px; margin-top: 15px; overflow-x: auto; white-space: nowrap; padding-bottom: 5px;">
+                    <button id="cust-tab-bookings" onclick="switchCustomerTab('bookings')" style="padding: 10px 15px; border: none; background: none; font-weight: 600; font-size: 0.95rem; cursor: pointer; color: var(--primary-color); border-bottom: 3px solid var(--primary-color); display: flex; align-items: center; gap: 8px; transition: all 0.2s; white-space: nowrap; flex-shrink: 0;">
                         <i class="fa-solid fa-plane-departure"></i> My Bookings
                     </button>
-                    <button id="cust-tab-notifications" onclick="switchCustomerTab('notifications')" style="padding: 10px 15px; border: none; background: none; font-weight: 600; font-size: 0.95rem; cursor: pointer; color: #888; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                    <button id="cust-tab-notifications" onclick="switchCustomerTab('notifications')" style="padding: 10px 15px; border: none; background: none; font-weight: 600; font-size: 0.95rem; cursor: pointer; color: #888; display: flex; align-items: center; gap: 8px; transition: all 0.2s; white-space: nowrap; flex-shrink: 0;">
                         <i class="fa-solid fa-bell"></i> Notifications 
                         <span id="cust-notifications-badge" style="display: none; background: #ef4444; color: #fff; border-radius: 10px; padding: 2px 6px; font-size: 0.7rem; font-weight: 700; line-height: 1;">0</span>
                     </button>
-                    <button id="cust-tab-wishlist" onclick="switchCustomerTab('wishlist')" style="padding: 10px 15px; border: none; background: none; font-weight: 600; font-size: 0.95rem; cursor: pointer; color: #888; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
-                        <i class="fa-solid fa-heart"></i> My Wishlist <span id="tab-wishlist-count" style="display: none; background: #ef4444; color: #fff; border-radius: 10px; padding: 2px 6px; font-size: 0.7rem; font-weight: 700; line-height: 1; box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);">0</span>
+                    <button id="cust-tab-wishlist" onclick="switchCustomerTab('wishlist')" style="padding: 10px 15px; border: none; background: none; font-weight: 600; font-size: 0.95rem; cursor: pointer; color: #888; display: flex; align-items: center; gap: 8px; transition: all 0.2s; white-space: nowrap; flex-shrink: 0;">
+                        <i class="fa-solid fa-heart"></i> My Wishlist <span id="tab-wishlist-count" style="display: none; background: #ef4444; color: #fff; border-radius: 10px; padding: 2px 6px; font-size: 0.7rem; font-weight: 700; line-height: 1;">0</span>
+                    </button>
+                    <button id="cust-tab-splitter" onclick="switchCustomerTab('splitter')" style="padding: 10px 15px; border: none; background: none; font-weight: 600; font-size: 0.95rem; cursor: pointer; color: #888; display: flex; align-items: center; gap: 8px; transition: all 0.2s; white-space: nowrap; flex-shrink: 0;">
+                        <i class="fa-solid fa-file-invoice-dollar"></i> Split Bill
+                    </button>
+                    <button id="cust-tab-planner" onclick="switchCustomerTab('planner')" style="padding: 10px 15px; border: none; background: none; font-weight: 600; font-size: 0.95rem; cursor: pointer; color: #888; display: flex; align-items: center; gap: 8px; transition: all 0.2s; white-space: nowrap; flex-shrink: 0;">
+                        <i class="fa-solid fa-calendar-check"></i> Day Planner
                     </button>
                 </div>
             </div>
@@ -524,6 +585,110 @@
 
             <div id="user-wishlist-container" style="padding: 20px; overflow-y: auto; flex: 1; display: none; background: var(--white); color: var(--text-color);">
                 <!-- Dynamically populated wishlist list -->
+            </div>
+
+            <!-- Feature 14: Group Expense Splitter Container -->
+            <div id="user-splitter-container" style="padding: 20px; overflow-y: auto; flex: 1; display: none; background: var(--white); color: var(--text-color);">
+                <h4 style="margin-top: 0; color: var(--dark-color);"><i class="fa-solid fa-people-group" style="color: var(--primary-color);"></i> Travel Group Expense Splitter</h4>
+                <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px; line-height: 1.4;">Add friends to your travel group, log common trip expenses, and see instantly who owes who how much.</p>
+                
+                <!-- Group Members Input -->
+                <div style="background: var(--light-color); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+                    <h5 style="margin: 0 0 10px 0; font-size: 0.9rem; color: var(--dark-color);">1. Add Group Members</h5>
+                    <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                        <input type="text" id="splitter-member-name" placeholder="Enter friend name" style="flex: 1; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--white); color: var(--text-color); font-size: 0.85rem;">
+                        <button type="button" onclick="addSplitterMember()" class="btn btn-secondary" style="padding: 8px 15px; font-size: 0.85rem;">Add Member</button>
+                    </div>
+                    <div id="splitter-members-list" style="display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.85rem;">
+                        <!-- List of members -->
+                    </div>
+                </div>
+
+                <!-- Log Expense Form -->
+                <div style="background: var(--light-color); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+                    <h5 style="margin: 0 0 10px 0; font-size: 0.9rem; color: var(--dark-color);">2. Log an Expense</h5>
+                    <form id="splitter-expense-form" onsubmit="addSplitterExpense(event)">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px;">
+                            <div>
+                                <label style="display: block; font-size: 0.75rem; margin-bottom: 4px; font-weight: 600;">Paid By</label>
+                                <select id="splitter-expense-paid-by" required style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--white); color: var(--text-color); font-size: 0.85rem;">
+                                    <option value="" disabled selected>Who paid?</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.75rem; margin-bottom: 4px; font-weight: 600;">Amount (₹)</label>
+                                <input type="number" id="splitter-expense-amount" min="1" required placeholder="Amount in ₹" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--white); color: var(--text-color); font-size: 0.85rem;">
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 12px;">
+                            <label style="display: block; font-size: 0.75rem; margin-bottom: 4px; font-weight: 600;">Description</label>
+                            <input type="text" id="splitter-expense-desc" required placeholder="e.g. Taxi, Dinner, Tickets" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--white); color: var(--text-color); font-size: 0.85rem;">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 8px; font-size: 0.85rem;">Log Expense</button>
+                    </form>
+                </div>
+
+                <!-- Expenses list and simplified settlements -->
+                <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+                    <div>
+                        <h5 style="margin: 0 0 10px 0; font-size: 0.9rem; color: var(--dark-color);">Logged Expenses</h5>
+                        <div id="splitter-expenses-log" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; background: var(--light-color); font-size: 0.85rem; display: flex; flex-direction: column;">
+                            <p style="color: #888; text-align: center; padding: 20px; margin: 0;">No expenses logged yet.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h5 style="margin: 0 0 10px 0; font-size: 0.9rem; color: var(--dark-color);">Final Settlements (Debts)</h5>
+                        <div id="splitter-settlements" style="border: 1px solid var(--border-color); border-radius: 8px; background: var(--light-color); padding: 15px; font-size: 0.85rem; line-height: 1.5; min-height: 80px; display: flex; flex-direction: column; justify-content: center;">
+                            <p style="color: #888; text-align: center; margin: 0;">No balances to settle.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 15: Drag-and-Drop Day Planner Container -->
+            <div id="user-planner-container" style="padding: 20px; overflow-y: auto; flex: 1; display: none; background: var(--white); color: var(--text-color);">
+                <h4 style="margin-top: 0; color: var(--dark-color);"><i class="fa-solid fa-calendar-check" style="color: var(--primary-color);"></i> Interactive Itinerary Day Planner</h4>
+                <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px; line-height: 1.4;">Select a booked destination to drag and drop sightseeing attractions and design your perfect daily plan.</p>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px;">Select Booking to Plan:</label>
+                    <select id="planner-booking-select" onchange="loadPlannerItinerary(this.value)" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--white); color: var(--text-color); font-size: 0.85rem;">
+                        <option value="" disabled selected>Select an active booking...</option>
+                    </select>
+                </div>
+
+                <div id="planner-grid" style="display: none; grid-template-columns: 1.2fr 2fr; gap: 15px; margin-top: 15px; height: 350px;">
+                    <!-- Attractions Pool -->
+                    <div style="border: 1px solid var(--border-color); border-radius: 8px; background: var(--light-color); padding: 10px; display: flex; flex-direction: column; height: 100%;">
+                        <span style="font-weight: 700; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 8px; color: var(--dark-color);">Attractions Pool</span>
+                        <div id="planner-attractions-pool" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 2px;">
+                            <!-- Dynamic attractions -->
+                        </div>
+                    </div>
+                    
+                    <!-- Days Columns -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; height: 100%; overflow-x: auto; width: 100%;" id="planner-days-columns">
+                        <!-- Day 1 column -->
+                        <div class="planner-day-col" data-day="1" ondragover="allowPlannerDrop(event)" ondrop="handlePlannerDrop(event, 1)" style="border: 1px dashed var(--border-color); border-radius: 8px; background: var(--light-color); padding: 10px; display: flex; flex-direction: column; height: 100%;">
+                            <span style="font-weight: 700; font-size: 0.8rem; color: var(--primary-color); border-bottom: 1px solid var(--border-color); padding-bottom: 4px; margin-bottom: 8px; text-align: center;">Day 1</span>
+                            <div class="day-dropzone" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;"></div>
+                        </div>
+                        <!-- Day 2 column -->
+                        <div class="planner-day-col" data-day="2" ondragover="allowPlannerDrop(event)" ondrop="handlePlannerDrop(event, 2)" style="border: 1px dashed var(--border-color); border-radius: 8px; background: var(--light-color); padding: 10px; display: flex; flex-direction: column; height: 100%;">
+                            <span style="font-weight: 700; font-size: 0.8rem; color: var(--primary-color); border-bottom: 1px solid var(--border-color); padding-bottom: 4px; margin-bottom: 8px; text-align: center;">Day 2</span>
+                            <div class="day-dropzone" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;"></div>
+                        </div>
+                        <!-- Day 3 column -->
+                        <div class="planner-day-col" data-day="3" ondragover="allowPlannerDrop(event)" ondrop="handlePlannerDrop(event, 3)" style="border: 1px dashed var(--border-color); border-radius: 8px; background: var(--light-color); padding: 10px; display: flex; flex-direction: column; height: 100%;">
+                            <span style="font-weight: 700; font-size: 0.8rem; color: var(--primary-color); border-bottom: 1px solid var(--border-color); padding-bottom: 4px; margin-bottom: 8px; text-align: center;">Day 3</span>
+                            <div class="day-dropzone" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="planner-placeholder" style="text-align: center; color: #888; padding: 40px 10px; border: 1px dashed var(--border-color); border-radius: 8px;">
+                    <i class="fa-solid fa-map-location-dot fa-3x" style="margin-bottom: 12px; color: #ccc;"></i>
+                    <p style="font-size: 0.95rem; font-weight: 500; margin: 0;">Please select an active booking to plan day-by-day itinerary.</p>
+                </div>
             </div>
         </div>
     </div>\n\n    <!-- 3. System Admin Dashboard Modal -->
@@ -655,6 +820,13 @@
                             <label for="review-comment-text" style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; color: var(--text-color);">Your Review Comment</label>
                             <textarea id="review-comment-text" rows="3" placeholder="Tell others about your experience..." style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--white); color: var(--text-color); border-radius: 6px; font-size: 0.9rem; outline: none; resize: none;"></textarea>
                         </div>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; color: var(--text-color);">Upload Vacation Photo (Optional)</label>
+                            <input type="file" id="review-photo-file" accept="image/*" style="width: 100%; font-size: 0.85rem; color: var(--text-color); margin-bottom: 8px;">
+                            <div id="review-photo-preview" style="display: none; width: 100%; height: 120px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border-color); position: relative; background-size: cover; background-position: center; margin-top: 8px;">
+                                <button type="button" onclick="clearReviewPhotoPreview()" style="position: absolute; right: 5px; top: 5px; background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.8rem;">&times;</button>
+                            </div>
+                        </div>
                         <button type="submit" class="btn btn-primary" style="padding: 8px 20px; font-size: 0.9rem;">Submit Review</button>
                     </form>
                 </div>
@@ -780,6 +952,61 @@
                         <p style="margin: 0; font-size: 0.9rem; display: none; color: var(--text-color); margin-top: 8px; padding-left: 10px; border-left: 2px solid var(--primary-color);">A: Click on your Profile/Dashboard name in the top navigation, navigate to "My Bookings", and for any paid bookings, you will see a "Download PDF Invoice" button next to it.</p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Compare Status Bar -->
+    <div id="compare-bar" style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--white); border: 1px solid var(--border-color); border-radius: 30px; box-shadow: 0 5px 25px rgba(0,0,0,0.2); padding: 10px 25px; z-index: 1500; align-items: center; gap: 15px;">
+        <span style="font-weight: 600; font-size: 0.9rem; color: var(--text-color);"><i class="fa-solid fa-scale-balanced" style="color: var(--primary-color);"></i> Compare Destinations (<span id="compare-count">0</span>/3)</span>
+        <button onclick="openCompareModal()" class="btn btn-primary" style="padding: 6px 15px; font-size: 0.8rem; border-radius: 20px;">Compare Now</button>
+        <button onclick="clearComparison()" style="background: none; border: none; color: #888; font-size: 0.8rem; cursor: pointer; text-decoration: underline;">Clear</button>
+    </div>
+
+    <!-- 6. Destination Comparison Modal -->
+    <div id="comparison-modal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+        <div class="modal-card" style="background: var(--white); border: 1px solid var(--border-color); width: 95%; max-width: 800px; max-height: 85vh; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); overflow: hidden; position: relative; display: flex; flex-direction: column; animation: slideIn 0.3s ease;">
+            <button onclick="closeCompareModal()" style="position: absolute; right: 15px; top: 15px; background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #888; z-index: 10;">&times;</button>
+            
+            <div style="padding: 20px; border-bottom: 1px solid var(--border-color); background: var(--light-color);">
+                <h3 style="margin: 0; font-size: 1.3rem; color: var(--text-color); display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-scale-balanced" style="color: var(--primary-color);"></i> Compare Destinations
+                </h3>
+            </div>
+            
+            <div style="padding: 20px; overflow-y: auto; flex: 1; background: var(--white); color: var(--text-color);">
+                <div class="table-responsive" style="overflow-x: auto;">
+                    <table class="compare-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border-color); background: var(--light-color);" id="compare-table-headers">
+                                <th style="padding: 12px; font-weight: 700; width: 25%;">Feature</th>
+                                <!-- Dynamic headings -->
+                            </tr>
+                        </thead>
+                        <tbody id="compare-table-body">
+                            <!-- Dynamic rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. 360° Virtual Tour Modal -->
+    <div id="tour-360-modal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(8px);">
+        <div class="modal-card" style="background: #111; border: 1px solid #333; width: 95%; max-width: 850px; max-height: 85vh; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; position: relative; display: flex; flex-direction: column; animation: slideIn 0.3s ease;">
+            <button onclick="closeVirtualTourModal()" style="position: absolute; right: 15px; top: 15px; background: rgba(0,0,0,0.5); border: none; font-size: 1.4rem; cursor: pointer; color: #fff; z-index: 10; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">&times;</button>
+            
+            <div style="padding: 20px; border-bottom: 1px solid #222; background: #1a1a1a; color: #fff;">
+                <h3 id="tour-360-title" style="margin: 0; font-size: 1.3rem; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-vr-cardboard" style="color: var(--primary-color);"></i> 360° Landmark Virtual Tour
+                </h3>
+                <p style="margin: 5px 0 0 0; font-size: 0.75rem; color: #aaa;"><i class="fa-solid fa-arrows-left-right"></i> Click and drag horizontally to look around</p>
+            </div>
+            
+            <div style="flex: 1; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;" id="tour-360-viewer-container">
+                <!-- Panoramic Viewer Frame -->
+                <div id="tour-360-pan-frame" style="width: 2500px; height: 450px; cursor: grab; background-size: cover; background-position: center; position: absolute; left: 0;"></div>
             </div>
         </div>
     </div>

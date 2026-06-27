@@ -44,7 +44,7 @@ const getReviewsForDestination = async (req, res, next) => {
  */
 const addReview = async (req, res, next) => {
     try {
-        const { destinationId, rating, comment } = req.body;
+        const { destinationId, rating, comment, photo } = req.body;
 
         if (!destinationId || !rating) {
             return res.status(400).json({
@@ -80,6 +80,7 @@ const addReview = async (req, res, next) => {
             // Update existing review
             review.rating = numRating;
             review.comment = comment ? comment.trim() : '';
+            review.photo = photo ? photo.trim() : '';
             review.userName = user.name; // sync username in case it changed
             await review.save();
         } else {
@@ -89,7 +90,8 @@ const addReview = async (req, res, next) => {
                 userId: req.user.id,
                 userName: user.name,
                 rating: numRating,
-                comment: comment ? comment.trim() : ''
+                comment: comment ? comment.trim() : '',
+                photo: photo ? photo.trim() : ''
             });
             await review.save();
         }
