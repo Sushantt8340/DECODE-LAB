@@ -567,18 +567,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- WEATHER DATABASE AND LOOKUP ---
-    const WEATHER_DB = {
-        'Taj Mahal': { temp: '32°C', cond: 'Sunny / Warm', rain: '5%', advice: 'Best visited early morning. Wear comfortable walking shoes and carry sunscreen.' },
-        'Kerala Backwaters': { temp: '29°C', cond: 'Humid / Light Rain', rain: '45%', advice: 'Bring an umbrella. Pack light, breathable linen clothes and mosquito repellent.' },
-        'Nubra Valley': { temp: '14°C', cond: 'Clear / Cold', rain: '2%', advice: 'Cold winds. Heavy woolen clothes, thermal layers, and hydration are essential.' },
-        'Hawa Mahal': { temp: '35°C', cond: 'Sunny / Hot', rain: '8%', advice: 'Hot afternoons. Stay hydrated. Wear sunscreen and a wide-brimmed hat.' },
-        'Calangute Beach': { temp: '30°C', cond: 'Pleasant / Breezy', rain: '15%', advice: 'Great beach weather. Pack sunscreen, swimwear, shorts, and flip-flops.' },
-        'Varanasi Ghats': { temp: '31°C', cond: 'Humid / Clear', rain: '12%', advice: 'Modest clothing recommended. Best time for boat ride is sunrise or sunset.' }
-    };
+    // --- WEATHER CACHE AND API LOOKUP ---
+    const weatherCache = {};
+    let currentDestWeather = { temp: '26°C', cond: 'Mild / Clear', rain: '10%', advice: 'Pack comfortable clothes. Check local festival guidelines.' };
 
-    const getWeatherData = (destName) => {
-        return WEATHER_DB[destName] || { temp: '26°C', cond: 'Mild / Clear', rain: '10%', advice: 'Pack comfortable clothes. Check local festival guidelines.' };
+    const fetchWeatherForCity = async (city) => {
+        if (!city || city === 'other') return currentDestWeather;
+        // Normalize city name (e.g. remove "Backwaters", "Ghats", "Valley", "Beach", "Palace", "Fort" etc.)
+        let cleanCity = city.replace(/(Backwaters|Ghats|Valley|Beach|Palace|Fort|Mahal)/gi, '').trim();
+        
+        if (weatherCache[cleanCity]) return weatherCache[cleanCity];
+        try {
+            const res = await fetch(`${API_BASE}/weather?city=${encodeURIComponent(cleanCity)}`);
+            const resData = await res.json();
+            if (resData.success && resData.data) {
+                weatherCache[cleanCity] = resData.data;
+                return resData.data;
+            }
+        } catch (err) {
+            console.error('Error fetching weather:', err);
+        }
+        return { temp: '26°C', cond: 'Mild / Clear', rain: '10%', advice: 'Pack comfortable clothes. Check local guidelines.' };
     };
 
     let activePromoCode = '';
@@ -652,16 +661,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update Live Weather Advisory Widget
         const weatherWidget = document.getElementById('weather-advisory-widget');
         if (weatherWidget) {
-            const wData = getWeatherData(destName);
             const wTempEl = document.getElementById('weather-temp');
             const wCondEl = document.getElementById('weather-cond');
             const wRainEl = document.getElementById('weather-rain');
             const wAdvEl = document.getElementById('weather-advisory');
 
-            if (wTempEl) wTempEl.textContent = wData.temp;
-            if (wCondEl) wCondEl.textContent = wData.cond;
-            if (wRainEl) wRainEl.textContent = 'Rain: ' + wData.rain;
-            if (wAdvEl) wAdvEl.textContent = wData.advice;
+            if (wTempEl) wTempEl.textContent = currentDestWeather.temp;
+            if (wCondEl) wCondEl.textContent = currentDestWeather.cond;
+            if (wRainEl) wRainEl.textContent = 'Rain: ' + currentDestWeather.rain;
+            if (wAdvEl) wAdvEl.textContent = currentDestWeather.advice;
             weatherWidget.style.display = 'block';
         }
     };
@@ -719,7 +727,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (budgetGroup) budgetGroup.style.display = 'block';
                 if (promoGroup) promoGroup.style.display = 'block';
                 if (paymentOptionsGroup) paymentOptionsGroup.style.display = 'block';
-                updateTotalPrice();
+                
+                const wTempEl = document.getElementById('weather-temp');
+                const wCondEl = document.getElementById('weather-cond');
+                const wRainEl = document.getElementById('weather-rain');
+                const wAdvEl = document.getElementById('weather-advisory');
+                const weatherWidget = document.getElementById('weather-advisory-widget');
+                
+                if (weatherWidget) {
+                    if (wTempEl) wTempEl.textContent = '...';
+                    if (wCondEl) wCondEl.textContent = 'Loading...';
+                    if (wRainEl) wRainEl.textContent = '';
+                    if (wAdvEl) wAdvEl.textContent = '';
+                    weatherWidget.style.display = 'block';
+                }
+
+                fetchWeatherForCity(destInput.value).then(wData => {
+                    currentDestWeather = wData;
+                    updateTotalPrice();
+                }).catch(err => {
+                    console.error('Error in handleDestChange weather fetch:', err);
+                    updateTotalPrice();
+                });
             } else {
                 hideBookingFields();
             }
@@ -2705,7 +2734,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const clearReviewPhotoPreview = () => {
+    const clearReviewPhotoPreview = (event) => {
+        if (event) event.stopPropagation();
         reviewPhotoBase64 = '';
         if (reviewPhotoInput) reviewPhotoInput.value = '';
         if (reviewPhotoPreview) {
@@ -2923,7 +2953,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCompareBar();
     };
 
-    const openCompareModal = () => {
+    const openCompareModal = async () => {
         if (compareDestinations.length < 2) {
             showToast('Please select at least 2 destinations to compare.', 'info');
             return;
@@ -2935,42 +2965,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!modal || !headers || !body) return;
 
+        // Reset headers and show loading state
         headers.innerHTML = '<th style="padding: 12px; font-weight: 700; width: 25%;">Feature</th>';
-        body.innerHTML = '';
-
-        compareDestinations.forEach(dest => {
-            headers.innerHTML += `
-                <th style="padding: 12px; font-weight: 700; text-align: center; width: ${75 / compareDestinations.length}%;">
-                    <div style="font-weight: 800; color: var(--primary-color); font-size: 1rem;">${dest.name || dest.title}</div>
-                    <div style="font-size: 0.8rem; color: #888; margin-top: 4px;">From ${dest.price}</div>
-                    <button onclick="selectDestinationForBooking('${dest.name || dest.title}'); closeCompareModal();" class="btn btn-primary" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 4px; margin-top: 8px;">Book This</button>
-                </th>
-            `;
-        });
-
-        const features = [
-            { label: 'Estimated Cost', key: 'price' },
-            { label: 'Rating Stars', key: 'rating' },
-            { label: 'Weather Zone', key: 'name', transform: (name) => getWeatherData(name).cond },
-            { label: 'Average Temperature', key: 'name', transform: (name) => getWeatherData(name).temp },
-            { label: 'Key Travel Advice', key: 'name', transform: (name) => getWeatherData(name).advice },
-            { label: 'Short Description', key: 'desc' }
-        ];
-
-        features.forEach(feat => {
-            let rowHtml = `<tr style="border-bottom: 1px solid var(--border-color);"><td style="padding: 12px; font-weight: 700; background: var(--light-color);">${feat.label}</td>`;
-            compareDestinations.forEach(dest => {
-                let val = dest[feat.key] || dest.title || '';
-                if (feat.transform) {
-                    val = feat.transform(dest.name || dest.title);
-                }
-                rowHtml += `<td style="padding: 12px; text-align: center; vertical-align: top; line-height: 1.4;">${val}</td>`;
-            });
-            rowHtml += '</tr>';
-            body.innerHTML += rowHtml;
-        });
-
+        body.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px;"><i class="fa-solid fa-spinner fa-spin fa-2xl" style="color: var(--primary-color);"></i><p style="margin-top: 15px; font-weight: 600;">Fetching live weather data...</p></td></tr>';
         modal.style.display = 'flex';
+
+        try {
+            // Fetch live weather data in parallel for all compared destinations
+            const weatherPromises = compareDestinations.map(d => fetchWeatherForCity(d.name || d.title));
+            const weatherDataList = await Promise.all(weatherPromises);
+
+            // Re-render headers
+            headers.innerHTML = '<th style="padding: 12px; font-weight: 700; width: 25%;">Feature</th>';
+            compareDestinations.forEach(dest => {
+                headers.innerHTML += `
+                    <th style="padding: 12px; font-weight: 700; text-align: center; width: ${75 / compareDestinations.length}%;">
+                        <div style="font-weight: 800; color: var(--primary-color); font-size: 1rem;">${dest.name || dest.title}</div>
+                        <div style="font-size: 0.8rem; color: #888; margin-top: 4px;">From ${dest.price}</div>
+                        <button onclick="selectDestinationForBooking('${dest.name || dest.title}'); closeCompareModal();" class="btn btn-primary" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 4px; margin-top: 8px;">Book This</button>
+                    </th>
+                `;
+            });
+
+            // Build features rows
+            const features = [
+                { label: 'Estimated Cost', key: 'price' },
+                { label: 'Rating Stars', key: 'rating' },
+                { label: 'Weather Zone', key: 'name', transform: (name, idx) => weatherDataList[idx].cond },
+                { label: 'Live Temperature', key: 'name', transform: (name, idx) => weatherDataList[idx].temp },
+                { label: 'Key Travel Advice', key: 'name', transform: (name, idx) => weatherDataList[idx].advice },
+                { label: 'Short Description', key: 'desc' }
+            ];
+
+            body.innerHTML = '';
+            features.forEach(feat => {
+                let rowHtml = `<tr style="border-bottom: 1px solid var(--border-color);"><td style="padding: 12px; font-weight: 700; background: var(--light-color);">${feat.label}</td>`;
+                compareDestinations.forEach((dest, idx) => {
+                    let val = dest[feat.key] || dest.title || '';
+                    if (feat.transform) {
+                        val = feat.transform(dest.name || dest.title, idx);
+                    }
+                    rowHtml += `<td style="padding: 12px; text-align: center; vertical-align: top; line-height: 1.4;">${val}</td>`;
+                });
+                rowHtml += '</tr>';
+                body.innerHTML += rowHtml;
+            });
+        } catch (err) {
+            console.error('Comparison load error:', err);
+            body.innerHTML = '<tr><td colspan="4" style="text-align: center; color: red; padding: 20px;">Failed to load comparison data.</td></tr>';
+        }
     };
 
     const closeCompareModal = () => {
