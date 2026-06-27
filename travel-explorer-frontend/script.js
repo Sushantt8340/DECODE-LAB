@@ -2634,8 +2634,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const rememberCheckbox = document.getElementById('login-remember');
             if (emailInput && savedEmail) emailInput.value = savedEmail;
             if (passwordInput && savedPassword) passwordInput.value = savedPassword;
-            if (rememberCheckbox) rememberCheckbox.checked = true;
         }
+    }
     autofillSavedCredentials();
 
     // --- F. Legal Policies & FAQs Accordions / Tabs ---
