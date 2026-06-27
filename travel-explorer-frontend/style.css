@@ -1328,3 +1328,66 @@ img {
 #tab-wishlist-count {
     box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
 }
+
+/* --- Modal Slide-In Animation --- */
+@keyframes slideIn {
+    from { transform: translateY(-30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* --- Mobile User Dropdown and Responsive Adjustments --- */
+@media screen and (max-width: 1023px) {
+    #nav-user-dropdown {
+        width: 100%;
+    }
+    #nav-user-dropdown .dropdown-menu {
+        position: static !important;
+        box-shadow: none !important;
+        border: none !important;
+        background: var(--light-color) !important;
+        width: 90% !important;
+        margin: 10px auto 0 auto !important;
+        border-radius: 8px;
+        padding: 5px 0 !important;
+        display: none;
+        text-align: center;
+    }
+    #nav-user-dropdown .dropdown-menu li a {
+        padding: 10px 15px !important;
+        justify-content: center !important;
+    }
+    
+    /* Make dashboard tab buttons wrap/scroll beautifully on mobile */
+    .modal-card div[style*="display: flex; gap: 5px;"] {
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        padding-bottom: 8px !important;
+        width: 100% !important;
+        scrollbar-width: thin; /* Firefox */
+    }
+    .modal-card div[style*="display: flex; gap: 5px;"]::-webkit-scrollbar {
+        height: 4px;
+    }
+    .modal-card div[style*="display: flex; gap: 5px;"]::-webkit-scrollbar-thumb {
+        background: var(--border-color);
+        border-radius: 2px;
+    }
+    .modal-card button[id^="cust-tab-"] {
+        flex-shrink: 0 !important;
+    }
+}
+
+/* --- Legal Modal Styles --- */
+.legal-content-pane {
+    animation: fadeIn 0.3s ease;
+}
+.legal-tabs-container::-webkit-scrollbar {
+    height: 4px;
+}
+.legal-tabs-container::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 2px;
+}
+.faq-item h5:hover {
+    color: var(--primary-hover) !important;
+}

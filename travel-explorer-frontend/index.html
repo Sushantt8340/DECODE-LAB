@@ -125,7 +125,7 @@
                             <li class="disabled"><i class="fa-solid fa-xmark"></i> Dedicated Guide</li>
                             <li class="disabled"><i class="fa-solid fa-xmark"></i> Airport Transfers</li>
                         </ul>
-                        <a href="#contact" class="btn btn-secondary btn-block">Book Basic</a>
+                        <a href="#contact" onclick="selectPackageTier('basic')" class="btn btn-secondary btn-block">Book Basic</a>
                     </div>
                 </div>
 
@@ -145,7 +145,7 @@
                             <li><i class="fa-solid fa-check"></i> Dedicated Guide</li>
                             <li class="disabled"><i class="fa-solid fa-xmark"></i> Spa & Wellness</li>
                         </ul>
-                        <a href="#contact" class="btn btn-primary btn-block">Book Premium</a>
+                        <a href="#contact" onclick="selectPackageTier('premium')" class="btn btn-primary btn-block">Book Premium</a>
                     </div>
                 </div>
 
@@ -164,7 +164,7 @@
                             <li><i class="fa-solid fa-check"></i> Dedicated Guide & Driver</li>
                             <li><i class="fa-solid fa-check"></i> Spa & Wellness Passes</li>
                         </ul>
-                        <a href="#contact" class="btn btn-secondary btn-block">Book Luxury</a>
+                        <a href="#contact" onclick="selectPackageTier('luxury')" class="btn btn-secondary btn-block">Book Luxury</a>
                     </div>
                 </div>
             </div>
@@ -396,10 +396,10 @@
                 <div class="footer-col">
                     <h3>Legal</h3>
                     <ul>
-                        <li><a href="#">Terms & Conditions</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Cancellation Policy</a></li>
-                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#" onclick="openLegalModal('terms'); return false;">Terms & Conditions</a></li>
+                        <li><a href="#" onclick="openLegalModal('privacy'); return false;">Privacy Policy</a></li>
+                        <li><a href="#" onclick="openLegalModal('cancellation'); return false;">Cancellation Policy</a></li>
+                        <li><a href="#" onclick="openLegalModal('faqs'); return false;">FAQs</a></li>
                     </ul>
                 </div>
 
@@ -664,6 +664,121 @@
                     <p style="margin: 0; font-size: 0.9rem; color: var(--text-color); font-weight: 500;">
                         Please <a href="#" id="reviews-login-link" style="color: var(--primary-color); font-weight: 700; text-decoration: underline;">Login</a> to write a review.
                     </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Legal Policies & FAQs Modal -->
+    <div id="legal-modal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+        <div class="modal-card" style="background: var(--white); border: 1px solid var(--border-color); width: 95%; max-width: 800px; max-height: 85vh; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); overflow: hidden; position: relative; display: flex; flex-direction: column; animation: slideIn 0.3s ease;">
+            <button onclick="closeLegalModal()" style="position: absolute; right: 15px; top: 15px; background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #888; z-index: 10;">&times;</button>
+            
+            <div style="padding: 20px; border-bottom: 1px solid var(--border-color); background: var(--light-color);">
+                <h3 style="margin: 0; font-size: 1.3rem; color: var(--text-color); display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-scale-balanced" style="color: var(--primary-color);"></i> Legal Policies & FAQs
+                </h3>
+                <div style="display: flex; gap: 5px; margin-top: 15px; overflow-x: auto; padding-bottom: 5px;" class="legal-tabs-container">
+                    <button id="legal-tab-terms" onclick="switchLegalTab('terms')" style="padding: 8px 12px; border: none; background: none; font-weight: 600; font-size: 0.9rem; cursor: pointer; color: var(--primary-color); border-bottom: 3px solid var(--primary-color); white-space: nowrap; transition: all 0.2s;">
+                        Terms & Conditions
+                    </button>
+                    <button id="legal-tab-privacy" onclick="switchLegalTab('privacy')" style="padding: 8px 12px; border: none; background: none; font-weight: 600; font-size: 0.9rem; cursor: pointer; color: #888; white-space: nowrap; transition: all 0.2s;">
+                        Privacy Policy
+                    </button>
+                    <button id="legal-tab-cancellation" onclick="switchLegalTab('cancellation')" style="padding: 8px 12px; border: none; background: none; font-weight: 600; font-size: 0.9rem; cursor: pointer; color: #888; white-space: nowrap; transition: all 0.2s;">
+                        Cancellation Policy
+                    </button>
+                    <button id="legal-tab-faqs" onclick="switchLegalTab('faqs')" style="padding: 8px 12px; border: none; background: none; font-weight: 600; font-size: 0.9rem; cursor: pointer; color: #888; white-space: nowrap; transition: all 0.2s;">
+                        FAQs
+                    </button>
+                </div>
+            </div>
+            
+            <div style="padding: 25px; overflow-y: auto; flex: 1; background: var(--white); color: var(--text-color); font-size: 0.95rem; line-height: 1.6;">
+                <!-- Terms & Conditions content -->
+                <div id="legal-content-terms" class="legal-content-pane">
+                    <h4 style="margin-top: 0; color: var(--primary-color); font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">1. Terms of Service</h4>
+                    <p>Welcome to Bharat Safar. By accessing or using our website, booking travel services, or contacting us, you agree to comply with and be bound by these Terms & Conditions. If you disagree with any part of these terms, please do not use our services.</p>
+                    
+                    <h4 style="color: var(--primary-color); font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-top: 20px;">2. Booking & Registration</h4>
+                    <p>To reserve any destination or package, you must register a valid user account and log in. All bookings are subject to availability. You agree to provide accurate and complete personal details (name, email, and phone number) during booking.</p>
+                    
+                    <h4 style="color: var(--primary-color); font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-top: 20px;">3. Pricing & Payments</h4>
+                    <p>All prices stated on our platform are in Indian Rupees (INR) and are subject to change. Online payments are secured and processed through our verified gateway partner (Razorpay). For callback options, bookings remain pending until confirmed by our agent and payment is secured.</p>
+                    
+                    <h4 style="color: var(--primary-color); font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-top: 20px;">4. Travel Responsibilities & Insurance</h4>
+                    <p>Travelers are responsible for maintaining valid identification documents, visas, and health certifications during travel. Bharat Safar does not provide travel insurance. We highly recommend purchasing comprehensive travel insurance prior to your trip.</p>
+                    
+                    <h4 style="color: var(--primary-color); font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-top: 20px;">5. Limitation of Liability</h4>
+                    <p>Bharat Safar acts as an intermediary connecting clients with service providers (hotels, transport, flights). We shall not be held liable for injuries, damage, delays, or unexpected adjustments caused by weather conditions, political situations, or other force majeure incidents.</p>
+                </div>
+                
+                <!-- Privacy Policy content -->
+                <div id="legal-content-privacy" class="legal-content-pane" style="display: none;">
+                    <h4 style="margin-top: 0; color: var(--primary-color); font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">1. Information Collection</h4>
+                    <p>We collect personal information such as your name, email address, phone number, and account passwords to create your account and handle travel reservations. Payment transaction details are securely processed by Razorpay and never stored on our servers.</p>
+                    
+                    <h4 style="color: var(--primary-color); font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-top: 20px;">2. Use of Information</h4>
+                    <p>Your collected information is strictly utilized to process transactions, confirm bookings, send automated invoices (PDF), notify you regarding tour status updates via notifications, and improve customer support responses.</p>
+                    
+                    <h4 style="color: var(--primary-color); font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-top: 20px;">3. Cookies Policy</h4>
+                    <p>Our website utilizes local storage and cookies to maintain active login sessions, store user theme preferences (Light / Dark mode), and retain security tokens. You may disable cookies in your browser settings, but it will impact core reservation features.</p>
+                    
+                    <h4 style="color: var(--primary-color); font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-top: 20px;">4. Security & Data Protection</h4>
+                    <p>We employ standard Secure Socket Layer (SSL) encryption, firewalls, and MongoDB Atlas secure cluster authentication to guard your private database from unauthorized access, modifications, or breaches.</p>
+                </div>
+                
+                <!-- Cancellation Policy content -->
+                <div id="legal-content-cancellation" class="legal-content-pane" style="display: none;">
+                    <h4 style="margin-top: 0; color: var(--primary-color); font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">1. Standard Refund Terms</h4>
+                    <p>Cancellations must be requested via the support hotline or email. Refunds are calculated based on the timing of the request prior to the scheduled travel date:</p>
+                    
+                    <div style="margin: 15px 0; background: var(--light-color); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary-color);">
+                        <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;">
+                            <li><strong style="color: var(--primary-color);">More than 15 Days prior:</strong> 90% Refund of the package price.</li>
+                            <li><strong style="color: var(--primary-color);">7 to 15 Days prior:</strong> 50% Refund of the package price.</li>
+                            <li><strong style="color: var(--primary-color);">Less than 7 Days prior:</strong> No Refund. (100% cancellation fee applies).</li>
+                        </ul>
+                    </div>
+                    
+                    <h4 style="color: var(--primary-color); font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-top: 20px;">2. Refund Process Timeline</h4>
+                    <p>Approved refunds are processed back to the original payment source (bank account or card) within 5 to 7 business days. You will receive a system notification once the refund transaction is initiated from our side.</p>
+                    
+                    <h4 style="color: var(--primary-color); font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-top: 20px;">3. Tour Postponement</h4>
+                    <p>Travelers may request to reschedule their travel date up to 10 days before departure without any penalty, subject to availability in seasonal bookings and hotel pricing adjustments.</p>
+                </div>
+                
+                <!-- FAQs content -->
+                <div id="legal-content-faqs" class="legal-content-pane" style="display: none;">
+                    <h4 style="margin-top: 0; color: var(--primary-color); font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">Frequently Asked Questions</h4>
+                    
+                    <div class="faq-item" style="margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+                        <h5 style="margin: 0 0 6px 0; font-size: 0.95rem; font-weight: 700; color: var(--primary-color); cursor: pointer;" onclick="toggleFaqAccordion(this)">
+                            Q: How do I book a tour package? <i class="fa-solid fa-chevron-down" style="float: right; font-size: 0.8rem; margin-top: 4px;"></i>
+                        </h5>
+                        <p style="margin: 0; font-size: 0.9rem; display: none; color: var(--text-color); margin-top: 8px; padding-left: 10px; border-left: 2px solid var(--primary-color);">A: To book, you must first register and log in. Scroll to the "Popular Destinations" or "Packages" section, choose your destination, click "Book", select your dates, choose online payment or request a callback, and submit.</p>
+                    </div>
+                    
+                    <div class="faq-item" style="margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+                        <h5 style="margin: 0 0 6px 0; font-size: 0.95rem; font-weight: 700; color: var(--primary-color); cursor: pointer;" onclick="toggleFaqAccordion(this)">
+                            Q: What payment options do you support? <i class="fa-solid fa-chevron-down" style="float: right; font-size: 0.8rem; margin-top: 4px;"></i>
+                        </h5>
+                        <p style="margin: 0; font-size: 0.9rem; display: none; color: var(--text-color); margin-top: 8px; padding-left: 10px; border-left: 2px solid var(--primary-color);">A: We support online payments (Cards, UPI, Netbanking, Wallets) via Razorpay secure gateway, or you can choose "Pay at Counter" / callback where our experts call to arrange offline payment.</p>
+                    </div>
+                    
+                    <div class="faq-item" style="margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+                        <h5 style="margin: 0 0 6px 0; font-size: 0.95rem; font-weight: 700; color: var(--primary-color); cursor: pointer;" onclick="toggleFaqAccordion(this)">
+                            Q: Can I customize my travel itinerary? <i class="fa-solid fa-chevron-down" style="float: right; font-size: 0.8rem; margin-top: 4px;"></i>
+                        </h5>
+                        <p style="margin: 0; font-size: 0.9rem; display: none; color: var(--text-color); margin-top: 8px; padding-left: 10px; border-left: 2px solid var(--primary-color);">A: Yes! If your desired destination is not listed or you need custom arrangements, select "Other / General Query" from the destination dropdown, enter your details in the message box, and we will contact you within 24 hours.</p>
+                    </div>
+                    
+                    <div class="faq-item" style="margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+                        <h5 style="margin: 0 0 6px 0; font-size: 0.95rem; font-weight: 700; color: var(--primary-color); cursor: pointer;" onclick="toggleFaqAccordion(this)">
+                            Q: Where can I download my booking invoices? <i class="fa-solid fa-chevron-down" style="float: right; font-size: 0.8rem; margin-top: 4px;"></i>
+                        </h5>
+                        <p style="margin: 0; font-size: 0.9rem; display: none; color: var(--text-color); margin-top: 8px; padding-left: 10px; border-left: 2px solid var(--primary-color);">A: Click on your Profile/Dashboard name in the top navigation, navigate to "My Bookings", and for any paid bookings, you will see a "Download PDF Invoice" button next to it.</p>
+                    </div>
                 </div>
             </div>
         </div>

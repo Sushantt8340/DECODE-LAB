@@ -82,15 +82,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const navMenu = document.getElementById('nav-menu');
     const navLinks = document.querySelectorAll('.nav-link');
 
+    const closeMobileMenu = () => {
+        if (hamburger) hamburger.classList.remove('active');
+        if (navMenu) navMenu.classList.remove('active');
+    };
+    window.closeMobileMenu = closeMobileMenu;
+
     hamburger.addEventListener('click', () => {
         hamburger.classList.toggle('active');
         navMenu.classList.toggle('active');
     });
 
     navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            hamburger.classList.remove('active');
-            navMenu.classList.remove('active');
+        link.addEventListener('click', (e) => {
+            if (link.id === 'nav-username') {
+                e.preventDefault();
+                return; // Do not close mobile menu when clicking Dashboard username
+            }
+            closeMobileMenu();
         });
     });
 
@@ -153,6 +162,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', () => {
         dropdownMenu.style.display = 'none';
     });
+
+    // Close mobile menu when clicking any item inside user dropdown
+    if (dropdownMenu) {
+        dropdownMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                closeMobileMenu();
+            });
+        });
+    }
 
     // Update Navigation UI based on Auth State
     const updateWishlistBadges = () => {
@@ -400,6 +418,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateAuthUI();
                 startNotificationPolling();
                 closeAuthModal();
+                closeMobileMenu();
                 showToast(`Welcome back, ${currentUser.name}!`, 'success');
                 
                 // Automatically open Admin Dashboard modal immediately upon successful admin login
@@ -439,6 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateAuthUI();
                 startNotificationPolling();
                 closeAuthModal();
+                closeMobileMenu();
                 showToast(`Account created successfully! Welcome, ${currentUser.name}!`, 'success');
             } else {
                 authErrorMsg.textContent = data.message || 'Registration failed.';
@@ -597,6 +617,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (destInput) {
         const handleDestChange = () => {
             const isSpecificDest = destInput.value !== '' && destInput.value !== 'other';
+
+            if (isSpecificDest && !token) {
+                showToast('Please login to book a destination.', 'info');
+                openAuthModal();
+                destInput.value = '';
+                hideBookingFields();
+                return;
+            }
+
             const dateGroup = document.getElementById('date-group');
             const guestsRow = document.getElementById('guests-row');
             const packageGroup = document.getElementById('package-group');
@@ -643,6 +672,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const isDestSelected = destInput.value !== '';
             const isOtherSelected = destInput.value === 'other' || destInput.value === '';
             const needsDate = isDestSelected && destInput.value !== 'other';
+
+            if (needsDate && !token) {
+                showToast('Please login to book a destination.', 'error');
+                openAuthModal();
+                return;
+            }
 
             const isNameValid = validateInput(nameInput, nameInput.value.trim() !== '', 'name-error');
             const isEmailValid = validateInput(emailInput, isValidEmail(emailInput.value.trim()), 'email-error');
@@ -1015,7 +1050,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="rating-num">${destRating}</span>
                             <span class="reviews-count">(...)</span>
                         </div>
-                        <a href="#contact" class="btn btn-primary-outline" style="padding: 6px 15px; font-size: 0.9rem;">Book</a>
+                        <a href="#contact" onclick="selectDestinationForBooking('${escapedName}')" class="btn btn-primary-outline" style="padding: 6px 15px; font-size: 0.9rem;">Book</a>
                     </div>
                 </div>
             </div>
@@ -2157,6 +2192,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- D. Reusable Destination Pre-selector ---
     const selectDestinationForBooking = (destTitle) => {
+        if (!token) {
+            showToast('Please login to book a destination.', 'info');
+            openAuthModal();
+            return;
+        }
         if (destInput) {
             let matchFound = false;
             for (let i = 0; i < destInput.options.length; i++) {
@@ -2174,6 +2214,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     window.selectDestinationForBooking = selectDestinationForBooking;
+
+    const selectPackageTier = (tier) => {
+        if (!token) {
+            showToast('Please login to book a package.', 'info');
+            openAuthModal();
+            return;
+        }
+        const packageInput = document.getElementById('package-type');
+        if (packageInput) {
+            packageInput.value = tier;
+            packageInput.dispatchEvent(new Event('change'));
+            document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+    window.selectPackageTier = selectPackageTier;
 
     // --- E. Theme Toggle / Dark Mode ---
     const themeToggleBtn = document.getElementById('theme-toggle');
@@ -2581,6 +2636,63 @@ document.addEventListener('DOMContentLoaded', () => {
             if (passwordInput && savedPassword) passwordInput.value = savedPassword;
             if (rememberCheckbox) rememberCheckbox.checked = true;
         }
-    }
     autofillSavedCredentials();
+
+    // --- F. Legal Policies & FAQs Accordions / Tabs ---
+    const openLegalModal = (tabName = 'terms') => {
+        const modal = document.getElementById('legal-modal');
+        if (modal) modal.style.display = 'flex';
+        switchLegalTab(tabName);
+    };
+
+    const closeLegalModal = () => {
+        const modal = document.getElementById('legal-modal');
+        if (modal) modal.style.display = 'none';
+    };
+
+    const switchLegalTab = (tabName) => {
+        const tabs = ['terms', 'privacy', 'cancellation', 'faqs'];
+        tabs.forEach(t => {
+            const btn = document.getElementById(`legal-tab-${t}`);
+            const pane = document.getElementById(`legal-content-${t}`);
+            if (btn) {
+                if (t === tabName) {
+                    btn.style.color = 'var(--primary-color)';
+                    btn.style.borderBottom = '3px solid var(--primary-color)';
+                } else {
+                    btn.style.color = '#888';
+                    btn.style.borderBottom = 'none';
+                }
+            }
+            if (pane) {
+                pane.style.display = t === tabName ? 'block' : 'none';
+            }
+        });
+    };
+
+    const toggleFaqAccordion = (heading) => {
+        const p = heading.nextElementSibling;
+        const icon = heading.querySelector('i');
+        if (p) {
+            const isHidden = p.style.display === 'none' || p.style.display === '';
+            if (isHidden) {
+                p.style.display = 'block';
+                if (icon) {
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                }
+            } else {
+                p.style.display = 'none';
+                if (icon) {
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                }
+            }
+        }
+    };
+
+    window.openLegalModal = openLegalModal;
+    window.closeLegalModal = closeLegalModal;
+    window.switchLegalTab = switchLegalTab;
+    window.toggleFaqAccordion = toggleFaqAccordion;
 });
