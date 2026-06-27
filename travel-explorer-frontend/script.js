@@ -1120,10 +1120,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="wishlist-btn ${isWishlisted ? 'active' : ''}" data-dest-id="${destId}" onclick="toggleWishlist(event, '${destId}')" title="Save to Wishlist">
                         <i class="${isWishlisted ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
                     </button>
-                    <!-- 360 Virtual Tour Button -->
-                    <button class="tour-360-btn" onclick="openVirtualTour(event, '${escapedName}')" title="360° Virtual Tour" style="position: absolute; top: 15px; right: 15px; background: var(--white); opacity: 0.9; border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.15); color: var(--primary-color); font-size: 1rem; transition: all 0.3s ease;">
-                        <i class="fa-solid fa-vr-cardboard"></i>
-                    </button>
                     <!-- Compare Checkbox Label -->
                     <label style="position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.7); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; z-index: 5;" onclick="event.stopPropagation()">
                         <input type="checkbox" class="compare-checkbox" data-dest-id="${destId}" data-dest-name="${escapedName}" onchange="toggleCompareDestination(this)" style="cursor: pointer;"> Compare
@@ -2987,95 +2983,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.openCompareModal = openCompareModal;
     window.closeCompareModal = closeCompareModal;
 
-    // --- J. 360° Virtual Tour Logic ---
-    const PANORAMA_DB = {
-        'Taj Mahal': 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=2000&q=80',
-        'Kerala Backwaters': 'https://images.unsplash.com/photo-1593693397690-362cb9666fc2?auto=format&fit=crop&w=2000&q=80',
-        'Nubra Valley': 'https://images.unsplash.com/photo-1589136777351-fdc9c9c8c680?auto=format&fit=crop&w=2000&q=80',
-        'Hawa Mahal': 'https://images.unsplash.com/photo-1477587458883-471a5ed94245?auto=format&fit=crop&w=2000&q=80',
-        'Calangute Beach': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=80',
-        'Varanasi Ghats': 'https://images.unsplash.com/photo-1561361041-c96aa2e42ee0?auto=format&fit=crop&w=2000&q=80'
-    };
 
-    const openVirtualTour = (event, destName) => {
-        if (event) event.stopPropagation();
-
-        const modal = document.getElementById('tour-360-modal');
-        const title = document.getElementById('tour-360-title');
-        const frame = document.getElementById('tour-360-pan-frame');
-
-        if (!modal || !frame) return;
-
-        const imgUrl = PANORAMA_DB[destName] || 'https://images.unsplash.com/photo-1506125840744-167167210587?auto=format&fit=crop&w=2000&q=80';
-        
-        if (title) title.innerHTML = `<i class="fa-solid fa-vr-cardboard" style="color: var(--primary-color);"></i> 360° Virtual Tour: ${destName}`;
-        
-        frame.style.backgroundImage = `url(${imgUrl})`;
-        frame.style.left = '0px';
-
-        modal.style.display = 'flex';
-        init360DragHandler();
-    };
-
-    let isPanning360 = false;
-    let startPanX = 0;
-    let currentLeftOffset = 0;
-
-    const init360DragHandler = () => {
-        const container = document.getElementById('tour-360-viewer-container');
-        const frame = document.getElementById('tour-360-pan-frame');
-
-        if (!container || !frame) return;
-
-        const onMouseDown = (e) => {
-            isPanning360 = true;
-            startPanX = e.clientX || (e.touches && e.touches[0].clientX);
-            currentLeftOffset = parseInt(frame.style.left || '0', 10);
-            frame.style.cursor = 'grabbing';
-        };
-
-        const onMouseMove = (e) => {
-            if (!isPanning360) return;
-            const x = e.clientX || (e.touches && e.touches[0].clientX);
-            const dx = x - startPanX;
-            let newLeft = currentLeftOffset + dx;
-
-            const minLeft = container.clientWidth - 2500;
-            if (newLeft > 0) newLeft = 0;
-            if (newLeft < minLeft) newLeft = minLeft;
-
-            frame.style.left = `${newLeft}px`;
-        };
-
-        const onMouseUp = () => {
-            isPanning360 = false;
-            frame.style.cursor = 'grab';
-        };
-
-        container.removeEventListener('mousedown', onMouseDown);
-        container.removeEventListener('mousemove', onMouseMove);
-        window.removeEventListener('mouseup', onMouseUp);
-
-        container.removeEventListener('touchstart', onMouseDown);
-        container.removeEventListener('touchmove', onMouseMove);
-        window.removeEventListener('touchend', onMouseUp);
-
-        container.addEventListener('mousedown', onMouseDown);
-        container.addEventListener('mousemove', onMouseMove);
-        window.addEventListener('mouseup', onMouseUp);
-
-        container.addEventListener('touchstart', onMouseDown, { passive: true });
-        container.addEventListener('touchmove', onMouseMove, { passive: true });
-        window.addEventListener('touchend', onMouseUp);
-    };
-
-    const closeVirtualTourModal = () => {
-        const modal = document.getElementById('tour-360-modal');
-        if (modal) modal.style.display = 'none';
-    };
-
-    window.openVirtualTour = openVirtualTour;
-    window.closeVirtualTourModal = closeVirtualTourModal;
 
     // --- K. Day Itinerary Timeline Data ---
     const ITINERARY_POOL = {

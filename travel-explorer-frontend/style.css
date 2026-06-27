@@ -1405,13 +1405,7 @@ img {
     color: var(--text-color);
 }
 
-/* --- 360° Virtual Tour Styles --- */
-#tour-360-pan-frame {
-    transition: transform 0.1s ease-out;
-}
-#tour-360-pan-frame:active {
-    cursor: grabbing !important;
-}
+
 
 /* --- Travel Photo Gallery in Reviews --- */
 .review-photos-grid {
@@ -1503,9 +1497,4 @@ img {
     border-color: var(--primary-color) !important;
 }
 
-/* --- 360 Tour Card Button --- */
-.tour-360-btn:hover {
-    transform: scale(1.1);
-    background-color: var(--primary-color) !important;
-    color: var(--white) !important;
-}
+

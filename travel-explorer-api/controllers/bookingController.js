@@ -9,7 +9,6 @@ const Destination = require('../models/Destination');
 const Notification = require('../models/Notification');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { sendBookingConfirmation } = require('../services/emailService');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'bharatsafar_super_secret_key';
 
@@ -148,22 +147,6 @@ const createBooking = async (req, res, next) => {
                 read: false
             });
             await notification.save();
-            
-            // Dispatch confirmation email
-            sendBookingConfirmation({
-                id: newBooking._id,
-                fullName: newBooking.fullName,
-                email: newBooking.email,
-                destination: newBooking.destination,
-                travelDate: newBooking.travelDate,
-                adults: newBooking.adults,
-                kids: newBooking.kids,
-                packageType: newBooking.packageType,
-                totalPrice: newBooking.totalPrice,
-                paymentOption: newBooking.paymentOption,
-                paymentStatus: newBooking.paymentStatus,
-                phone: newBooking.phone
-            });
         } catch (err) {
             console.error('Failed to create booking notification/email:', err);
         }

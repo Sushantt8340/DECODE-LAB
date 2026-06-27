@@ -8,7 +8,6 @@ const Contact = require('../models/Contact');
 const Destination = require('../models/Destination');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
-const { sendAdminConfirmation } = require('../services/emailService');
 
 /**
  * @desc    Get dashboard statistics summary
@@ -109,19 +108,6 @@ const updateBookingStatus = async (req, res, next) => {
                 read: false
             });
             await notification.save();
-            
-            // Dispatch confirmation email
-            sendAdminConfirmation({
-                id: booking._id,
-                fullName: booking.fullName,
-                email: booking.email,
-                destination: booking.destination,
-                travelDate: booking.travelDate,
-                totalPrice: booking.totalPrice,
-                paymentOption: booking.paymentOption,
-                paymentStatus: booking.paymentStatus,
-                phone: booking.phone
-            });
         } catch (err) {
             console.error('Failed to create confirmation notification/email:', err);
         }
